@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
+  FormConfig,
+  InputElement,
   ButtonElement,
-  FormPreviewProps,
-  SortableItemProps,
+  FormValues,
 } from "../../types/form";
 import {
   DndContext,
@@ -20,6 +22,28 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Grip, X } from "lucide-react";
 import FormRenderer from "./FormRenderer";
+
+interface FormPreviewProps {
+  config: FormConfig;
+  formValues: FormValues;
+  onValueChange: (key: string, value: any) => void;
+  onSelectElement?: (id: string) => void;
+  selectedElementId?: string | null;
+  onReorderElements?: (elements: (InputElement | ButtonElement)[]) => void;
+  isEditable?: boolean;
+  onRemoveElement?: (id: string) => void;
+}
+
+interface SortableItemProps {
+  id: string;
+  element: InputElement | ButtonElement;
+  selectedElementId?: string | null;
+  onSelectElement?: (id: string) => void;
+  onRemoveElement?: (id: string) => void;
+  formValues: FormValues;
+  onValueChange: (key: string, value: any) => void;
+  onButtonClick: () => void;
+}
 
 const SortableItem: React.FC<SortableItemProps> = ({
   id,
@@ -133,7 +157,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     const {
       url,
       method,
-      headers = {},
+      // headers = {},
       responseMapping = {},
       inputParams = {},
     } = buttonElement.apiConfig;

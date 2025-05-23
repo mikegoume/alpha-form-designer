@@ -1,19 +1,24 @@
-import React from 'react';
-import { InputElement, ButtonElement, InputType, ButtonActionType } from '../../types/form';
-import { v4 as uuidv4 } from 'uuid';
-import { 
-  Type, 
-  Hash, 
-  Mail, 
-  Lock, 
-  List, 
-  Check, 
-  Circle, 
-  AlignLeft, 
+import React from "react";
+import {
+  InputElement,
+  ButtonElement,
+  InputType,
+  ButtonActionType,
+} from "../../types/form";
+import { v4 as uuidv4 } from "uuid";
+import {
+  Type,
+  Hash,
+  Mail,
+  Lock,
+  List,
+  Check,
+  Circle,
+  AlignLeft,
   Calendar,
   Square,
-  MousePointer
-} from 'lucide-react';
+  MousePointer,
+} from "lucide-react";
 
 interface ElementsPanelProps {
   onAddElement: (element: InputElement | ButtonElement) => void;
@@ -34,23 +39,23 @@ interface ButtonTypeOption {
 const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
   // Input type options
   const inputTypes: InputTypeOption[] = [
-    { type: 'text', label: 'Text', icon: <Type size={18} /> },
-    { type: 'number', label: 'Number', icon: <Hash size={18} /> },
-    { type: 'email', label: 'Email', icon: <Mail size={18} /> },
-    { type: 'password', label: 'Password', icon: <Lock size={18} /> },
-    { type: 'select', label: 'Dropdown', icon: <List size={18} /> },
-    { type: 'checkbox', label: 'Checkbox', icon: <Square size={18} /> },
-    { type: 'radio', label: 'Radio', icon: <Circle size={18} /> },
-    { type: 'textarea', label: 'Text Area', icon: <AlignLeft size={18} /> },
-    { type: 'date', label: 'Date', icon: <Calendar size={18} /> },
+    { type: "text", label: "Text", icon: <Type size={18} /> },
+    { type: "number", label: "Number", icon: <Hash size={18} /> },
+    { type: "email", label: "Email", icon: <Mail size={18} /> },
+    { type: "password", label: "Password", icon: <Lock size={18} /> },
+    { type: "select", label: "Dropdown", icon: <List size={18} /> },
+    { type: "checkbox", label: "Checkbox", icon: <Square size={18} /> },
+    { type: "radio", label: "Radio", icon: <Circle size={18} /> },
+    { type: "textarea", label: "Text Area", icon: <AlignLeft size={18} /> },
+    { type: "date", label: "Date", icon: <Calendar size={18} /> },
   ];
 
   // Button type options
   const buttonTypes: ButtonTypeOption[] = [
-    { actionType: 'api', label: 'API Call', icon: <MousePointer size={18} /> },
-    { actionType: 'submit', label: 'Submit', icon: <Check size={18} /> },
-    { actionType: 'reset', label: 'Reset', icon: <Circle size={18} /> },
-    { actionType: 'clear', label: 'Clear', icon: <Circle size={18} /> },
+    { actionType: "api", label: "API Call", icon: <MousePointer size={18} /> },
+    { actionType: "submit", label: "Submit", icon: <Check size={18} /> },
+    { actionType: "reset", label: "Reset", icon: <Circle size={18} /> },
+    { actionType: "clear", label: "Clear", icon: <Circle size={18} /> },
   ];
 
   // Create a base input element
@@ -62,27 +67,35 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
     placeholder: `Enter ${type}...`,
     order: 0,
     required: false,
-    options: type === 'select' || type === 'radio' ? [
-      { label: 'Option 1', value: 'option1' },
-      { label: 'Option 2', value: 'option2' }
-    ] : undefined
+    options:
+      type === "select" || type === "radio"
+        ? [
+            { label: "Option 1", value: "option1" },
+            { label: "Option 2", value: "option2" },
+          ]
+        : undefined,
   });
 
   // Create a base button element
-  const createButtonElement = (actionType: ButtonActionType): ButtonElement => ({
+  const createButtonElement = (
+    actionType: ButtonActionType
+  ): ButtonElement => ({
     id: uuidv4(),
-    type: 'button',
+    type: "button",
     label: actionType.charAt(0).toUpperCase() + actionType.slice(1),
     actionType,
     order: 0,
-    variant: 'primary',
-    size: 'md',
-    apiConfig: actionType === 'api' ? {
-      url: 'https://api.example.com/data',
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      responseMapping: {}
-    } : undefined
+    variant: "primary",
+    size: "md",
+    apiConfig:
+      actionType === "api"
+        ? {
+            url: "https://api.example.com/data",
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            responseMapping: {},
+          }
+        : undefined,
   });
 
   // Handle adding an input element
@@ -100,7 +113,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
       <div className="p-4 border-b border-gray-200 bg-gray-50">
         <h2 className="font-medium text-gray-700">Form Elements</h2>
       </div>
-      
+
       {/* Input Elements Section */}
       <div className="p-4 border-b border-gray-200">
         <h3 className="text-sm font-medium text-gray-500 mb-3">Input Fields</h3>
@@ -117,7 +130,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
           ))}
         </div>
       </div>
-      
+
       {/* Button Elements Section */}
       <div className="p-4">
         <h3 className="text-sm font-medium text-gray-500 mb-3">Buttons</h3>

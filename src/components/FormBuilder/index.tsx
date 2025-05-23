@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FormConfig,
   InputElement,
@@ -9,7 +9,7 @@ import ElementsPanel from "./ElementsPanel";
 import FormPreview from "./FormPreview";
 import PropertiesPanel from "./PropertiesPanel";
 import { v4 as uuidv4 } from "uuid";
-import { Plus, Save, Play, FileUp } from "lucide-react";
+import { Plus, Save, Play, FileDown, FileUp, Trash2 } from "lucide-react";
 
 // Initial empty form configuration
 const initialFormConfig: FormConfig = {

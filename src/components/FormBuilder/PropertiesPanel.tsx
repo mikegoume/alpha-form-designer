@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { InputElement, ButtonElement, APIConfig } from "../../types/form";
-import { Trash2 } from "lucide-react";
+import {
+  InputElement,
+  ButtonElement,
+  FormElement,
+  APIConfig,
+} from "../../types/form";
+import { Trash2, Plus } from "lucide-react";
 
 interface PropertiesPanelProps {
   element: InputElement | ButtonElement | undefined;
@@ -15,7 +20,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onRemoveElement,
   formElements,
 }) => {
-  // Early return if element is undefined to prevent any operations on undefined
+  // Early return if element is undefined
   if (!element) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center text-gray-500">
@@ -67,6 +72,117 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     });
   };
 
+  // Handle input parameter mapping change
+  const handleInputParamChange = (paramName: string, inputKey: string) => {
+    if (
+      !("actionType" in element) ||
+      element.actionType !== "api" ||
+      !apiConfig
+    )
+      return;
+
+    const updatedParams = { ...(apiConfig.inputParams || {}) };
+
+    if (inputKey) {
+      updatedParams[paramName] = inputKey;
+    } else {
+      delete updatedParams[paramName];
+    }
+
+    const updatedConfig = { ...apiConfig, inputParams: updatedParams };
+    setApiConfig(updatedConfig);
+
+    onUpdateElement({
+      ...element,
+      apiConfig: updatedConfig,
+    });
+  };
+
+  // Handle body field mapping change
+  const handleBodyFieldChange = (fieldName: string, inputKey: string) => {
+    if (
+      !("actionType" in element) ||
+      element.actionType !== "api" ||
+      !apiConfig
+    )
+      return;
+
+    const updatedBody = { ...(apiConfig.body || {}) };
+
+    if (inputKey) {
+      updatedBody[fieldName] = inputKey;
+    } else {
+      delete updatedBody[fieldName];
+    }
+
+    const updatedConfig = { ...apiConfig, body: updatedBody };
+    setApiConfig(updatedConfig);
+
+    onUpdateElement({
+      ...element,
+      apiConfig: updatedConfig,
+    });
+  };
+
+  // Handle adding a new body field
+  const handleAddBodyField = () => {
+    if (
+      !("actionType" in element) ||
+      element.actionType !== "api" ||
+      !apiConfig
+    )
+      return;
+
+    const availableInput = availableInputKeys.find(
+      (input) => !Object.values(apiConfig.body || {}).includes(input.key)
+    );
+
+    if (!availableInput) return;
+
+    const updatedBody = {
+      ...(apiConfig.body || {}),
+      [`field_${Object.keys(apiConfig.body || {}).length}`]: availableInput.key,
+    };
+
+    const updatedConfig = { ...apiConfig, body: updatedBody };
+    setApiConfig(updatedConfig);
+
+    onUpdateElement({
+      ...element,
+      apiConfig: updatedConfig,
+    });
+  };
+
+  // Handle adding a new input parameter
+  const handleAddInputParam = () => {
+    if (
+      !("actionType" in element) ||
+      element.actionType !== "api" ||
+      !apiConfig
+    )
+      return;
+
+    const availableInput = availableInputKeys.find(
+      (input) => !Object.values(apiConfig.inputParams || {}).includes(input.key)
+    );
+
+    if (!availableInput) return;
+
+    const updatedParams = {
+      ...(apiConfig.inputParams || {}),
+      [`param_${Object.keys(apiConfig.inputParams || {}).length}`]:
+        availableInput.key,
+    };
+
+    const updatedConfig = { ...apiConfig, inputParams: updatedParams };
+    setApiConfig(updatedConfig);
+
+    onUpdateElement({
+      ...element,
+      apiConfig: updatedConfig,
+    });
+  };
+
   // Handle response mapping change
   const handleResponseMappingChange = (
     responseKey: string,
@@ -105,7 +221,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     )
       return;
 
-    // Find an input key that's not already mapped
     const availableInput = availableInputKeys.find(
       (input) =>
         !Object.values(apiConfig.responseMapping || {}).includes(input.key)
@@ -373,9 +488,13 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                       onChange={(e) =>
                         handleApiConfigChange("url", e.target.value)
                       }
-                      placeholder="https://api.example.com/data"
+                      placeholder="https://api.example.com/data/{userId}"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Use {"{paramName}"} syntax to include input values in the
+                      URL
+                    </p>
                   </div>
 
                   <div>
@@ -396,6 +515,184 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     </select>
                   </div>
 
+                  {/* Request Body Section (for POST and PUT) */}
+                  {(apiConfig?.method === "POST" ||
+                    apiConfig?.method === "PUT") && (
+                    <div className="border-t border-gray-200 pt-3 mt-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Request Body Fields
+                        </label>
+                        <button
+                          type="button"
+                          onClick={handleAddBodyField}
+                          className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100 flex items-center"
+                          disabled={availableInputKeys.length === 0}
+                        >
+                          <Plus size={14} className="mr-1" />
+                          Add Field
+                        </button>
+                      </div>
+
+                      {apiConfig?.body &&
+                      Object.entries(apiConfig.body).length > 0 ? (
+                        Object.entries(apiConfig.body).map(
+                          ([fieldName, inputKey]) => (
+                            <div
+                              key={fieldName}
+                              className="flex items-center mb-2 space-x-2"
+                            >
+                              <input
+                                type="text"
+                                value={fieldName}
+                                onChange={(e) => {
+                                  const oldValue = fieldName;
+                                  const newValue = e.target.value;
+                                  const updatedBody = {
+                                    ...(apiConfig.body || {}),
+                                  };
+                                  delete updatedBody[oldValue];
+                                  updatedBody[newValue] = inputKey;
+                                  const updatedConfig = {
+                                    ...apiConfig,
+                                    body: updatedBody,
+                                  };
+                                  setApiConfig(updatedConfig);
+                                  onUpdateElement({
+                                    ...element,
+                                    apiConfig: updatedConfig,
+                                  });
+                                }}
+                                placeholder="Field Name"
+                                className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+                              />
+                              <select
+                                value={inputKey}
+                                onChange={(e) =>
+                                  handleBodyFieldChange(
+                                    fieldName,
+                                    e.target.value
+                                  )
+                                }
+                                className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+                              >
+                                <option value="">
+                                  -- Select Input Field --
+                                </option>
+                                {availableInputKeys.map((input) => (
+                                  <option key={input.key} value={input.key}>
+                                    {input.label} ({input.key})
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleBodyFieldChange(fieldName, "")
+                                }
+                                className="p-1 text-gray-400 hover:text-red-500"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          )
+                        )
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">
+                          No body fields configured. Add fields to send form
+                          values in the request body.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Input Parameters Section */}
+                  <div className="border-t border-gray-200 pt-3 mt-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        URL Parameters
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleAddInputParam}
+                        className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100 flex items-center"
+                        disabled={availableInputKeys.length === 0}
+                      >
+                        <Plus size={14} className="mr-1" />
+                        Add Parameter
+                      </button>
+                    </div>
+
+                    {apiConfig?.inputParams &&
+                    Object.entries(apiConfig.inputParams).length > 0 ? (
+                      Object.entries(apiConfig.inputParams).map(
+                        ([paramName, inputKey]) => (
+                          <div
+                            key={paramName}
+                            className="flex items-center mb-2 space-x-2"
+                          >
+                            <input
+                              type="text"
+                              value={paramName}
+                              onChange={(e) => {
+                                const oldValue = paramName;
+                                const newValue = e.target.value;
+                                const updatedParams = {
+                                  ...(apiConfig.inputParams || {}),
+                                };
+                                delete updatedParams[oldValue];
+                                updatedParams[newValue] = inputKey;
+                                const updatedConfig = {
+                                  ...apiConfig,
+                                  inputParams: updatedParams,
+                                };
+                                setApiConfig(updatedConfig);
+                                onUpdateElement({
+                                  ...element,
+                                  apiConfig: updatedConfig,
+                                });
+                              }}
+                              placeholder="Parameter Name"
+                              className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+                            />
+                            <select
+                              value={inputKey}
+                              onChange={(e) =>
+                                handleInputParamChange(
+                                  paramName,
+                                  e.target.value
+                                )
+                              }
+                              className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+                            >
+                              <option value="">-- Select Input Field --</option>
+                              {availableInputKeys.map((input) => (
+                                <option key={input.key} value={input.key}>
+                                  {input.label} ({input.key})
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleInputParamChange(paramName, "")
+                              }
+                              className="p-1 text-gray-400 hover:text-red-500"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        )
+                      )
+                    ) : (
+                      <p className="text-sm text-gray-500 italic">
+                        No URL parameters configured. Add parameters to use form
+                        values in the API URL.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Response Mapping Section */}
                   <div className="border-t border-gray-200 pt-3 mt-3">
                     <div className="flex justify-between items-center mb-2">
                       <label className="block text-sm font-medium text-gray-700">
@@ -404,9 +701,10 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                       <button
                         type="button"
                         onClick={handleAddResponseMapping}
-                        className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100"
+                        className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100 flex items-center"
                         disabled={availableInputKeys.length === 0}
                       >
+                        <Plus size={14} className="mr-1" />
                         Add Mapping
                       </button>
                     </div>

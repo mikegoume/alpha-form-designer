@@ -1,5 +1,12 @@
 import React from "react";
-import { FormRendererProps } from "../../types/form";
+import { InputElement, ButtonElement } from "../../types/form";
+
+interface FormRendererProps {
+  element: InputElement | ButtonElement;
+  value?: any;
+  onChange?: (value: any) => void;
+  onButtonClick?: () => void;
+}
 
 const FormRenderer: React.FC<FormRendererProps> = ({
   element,

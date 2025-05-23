@@ -49,8 +49,9 @@ export interface APIConfig {
   url: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   headers?: Record<string, string>;
-  body?: string; // Template string with {key} placeholders
+  body?: Record<string, string>; // Maps request body fields to form input keys
   responseMapping?: Record<string, string>; // Maps API response keys to form input keys
+  inputParams?: Record<string, string>; // Maps API parameter names to form input keys
 }
 
 export interface FormConfig {
@@ -61,40 +62,4 @@ export interface FormConfig {
 
 export interface FormValues {
   [key: string]: any;
-}
-
-export interface FormBuilderState {
-  config: FormConfig;
-  selectedElementId: string | null;
-  previewMode: boolean;
-  formValues: FormValues;
-}
-
-export interface FormRendererProps {
-  element: InputElement | ButtonElement;
-  value?: any;
-  onChange?: (value: any) => void;
-  onButtonClick?: () => void;
-}
-
-export interface FormPreviewProps {
-  config: FormConfig;
-  formValues: FormValues;
-  onValueChange: (key: string, value: any) => void;
-  onSelectElement?: (id: string) => void;
-  selectedElementId?: string | null;
-  onReorderElements?: (elements: (InputElement | ButtonElement)[]) => void;
-  isEditable?: boolean;
-  onRemoveElement?: (id: string) => void;
-}
-
-export interface SortableItemProps {
-  id: string;
-  element: InputElement | ButtonElement;
-  selectedElementId?: string | null;
-  onSelectElement?: (id: string) => void;
-  onRemoveElement?: (id: string) => void;
-  formValues: FormValues;
-  onValueChange: (key: string, value: any) => void;
-  onButtonClick: () => void;
 }
