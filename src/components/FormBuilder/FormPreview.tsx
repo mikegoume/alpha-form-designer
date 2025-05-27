@@ -165,36 +165,26 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     try {
       // Replace URL parameters with input values
       let finalUrl = url;
-      Object.entries(inputParams).forEach(([paramName, inputKey]) => {
+      Object.values(inputParams).forEach((inputKey) => {
         const value = formValues[inputKey];
         if (value !== undefined) {
-          finalUrl = finalUrl.replace(
-            `{${paramName}}`,
-            encodeURIComponent(value)
-          );
+          finalUrl = finalUrl.concat(`/${value}`);
         }
       });
 
-      console.log(`Making ${method} request to ${finalUrl}`);
-
-      // Simulate a successful API response
-      const simulatedResponse = {
-        id: "12345",
-        name: "John Doe",
-        email: "john.doe@example.com",
-        age: 30,
-        role: "Developer",
-        createdAt: new Date().toISOString(),
-      };
+      const response = await fetch(finalUrl, {
+        method,
+        // headers,
+      }).then((res) => res.json());
 
       // Update form values based on response mapping
-      Object.entries(responseMapping).forEach(([responseKey, formKey]) => {
-        if (simulatedResponse[responseKey] !== undefined) {
-          onValueChange(formKey, simulatedResponse[responseKey]);
+      Object.values(responseMapping).forEach((formKey) => {
+        if (response[formKey] !== undefined) {
+          onValueChange(formKey, response[formKey]);
         }
       });
 
-      return simulatedResponse;
+      return response;
     } catch (error) {
       console.error("API call failed:", error);
       return null;

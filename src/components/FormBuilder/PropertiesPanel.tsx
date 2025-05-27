@@ -1,10 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
-import {
-  InputElement,
-  ButtonElement,
-  FormElement,
-  APIConfig,
-} from "../../types/form";
+import { InputElement, ButtonElement, APIConfig } from "../../types/form";
 import { Trash2, Plus } from "lucide-react";
 
 interface PropertiesPanelProps {
@@ -244,16 +240,16 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   };
 
   // Handle options changes for select, radio, etc.
-  const handleOptionsChange = (
-    options: Array<{ label: string; value: string }>
-  ) => {
-    if (!("options" in element)) return;
+  // const handleOptionsChange = (
+  //   options: Array<{ label: string; value: string }>
+  // ) => {
+  //   if (!("options" in element)) return;
 
-    onUpdateElement({
-      ...element,
-      options,
-    });
-  };
+  //   onUpdateElement({
+  //     ...element,
+  //     options,
+  //   });
+  // };
 
   // Add a new option for select, radio, etc.
   const handleAddOption = () => {

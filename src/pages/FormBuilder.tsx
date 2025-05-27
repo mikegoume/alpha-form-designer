@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from "react";
 import {
   FormConfig,
   InputElement,
   ButtonElement,
   FormValues,
-} from "../../types/form";
-import ElementsPanel from "./ElementsPanel";
-import FormPreview from "./FormPreview";
-import PropertiesPanel from "./PropertiesPanel";
+} from "../types/form";
+import ElementsPanel from "../components/FormBuilder/ElementsPanel";
+import FormPreview from "../components/FormBuilder/FormPreview";
+import PropertiesPanel from "../components/FormBuilder/PropertiesPanel";
 import { v4 as uuidv4 } from "uuid";
-import { Plus, Save, Play, FileDown, FileUp, Trash2 } from "lucide-react";
+import { Plus, Save, Play, FileUp } from "lucide-react";
+import FormAssociation from "../components/FormBuilder/FormAssociation";
 
 // Initial empty form configuration
 const initialFormConfig: FormConfig = {
@@ -78,10 +80,10 @@ const FormBuilder: React.FC = () => {
 
   // Handle form values change
   const handleFormValueChange = (key: string, value: any) => {
-    setFormValues({
-      ...formValues,
+    setFormValues((prevValues) => ({
+      ...prevValues,
       [key]: value,
-    });
+    }));
   };
 
   // Handle reordering elements
@@ -163,7 +165,7 @@ const FormBuilder: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between border-b">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold text-gray-900">
               Dynamic Form Builder
@@ -238,6 +240,7 @@ const FormBuilder: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Panel - Elements */}
             <div className="lg:col-span-3">
+              <FormAssociation />
               <ElementsPanel onAddElement={handleAddElement} />
             </div>
 
