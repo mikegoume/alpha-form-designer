@@ -239,8 +239,8 @@ const FormBuilder: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Panel - Elements */}
-            <div className="lg:col-span-3">
-              <FormAssociation />
+            <div className="lg:col-span-3 flex flex-col gap-6">
+              <FormAssociation onAddElement={handleAddElement} />
               <ElementsPanel onAddElement={handleAddElement} />
             </div>
 

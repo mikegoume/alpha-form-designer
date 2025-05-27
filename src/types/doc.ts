@@ -20,6 +20,7 @@ export interface JsonFormData {
 }
 
 export interface DocumentData {
+  id: string;
   file: File;
   content: string;
   fileName: string;

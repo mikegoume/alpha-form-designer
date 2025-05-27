@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, Download, Edit, DownloadIcon } from "lucide-react";
 import { renderAsync } from "docx-preview";
 import { DocumentData } from "../../types/doc";
+import TemplatesContext from "../../contexts/templatesContext";
+import { useNavigate } from "react-router";
 
 interface DocumentPreviewProps {
   document: DocumentData;
@@ -15,9 +17,19 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   onExport,
   onEdit,
 }) => {
-  const [isUploaded] = React.useState(true);
+  const contextData = useContext(TemplatesContext);
+  const onSaveTemplate = contextData?.onSaveTemplate;
+
+  const navigate = useNavigate();
+
+  const [isUploaded] = useState(true);
 
   const contentRef = useRef<HTMLDivElement>(null);
+
+  function handleSaveDcument() {
+    onSaveTemplate({ ...document });
+    navigate("/templates");
+  }
 
   useEffect(() => {
     if (document.file && contentRef.current) {
@@ -41,7 +53,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
         <div className="flex items-center gap-2">
           {isUploaded ? (
             <button
-              onClick={onEdit}
+              onClick={handleSaveDcument}
               className="bg-primary-500 text-white px-3 py-1.5 text-sm rounded flex items-center gap-1.5 hover:bg-primary-600 transition-colors"
             >
               <DownloadIcon className="h-4 w-4" />

@@ -36,6 +36,46 @@ interface ButtonTypeOption {
   icon: React.ReactNode;
 }
 
+// Create a base input element
+export const createInputElement = (type: InputType): InputElement => ({
+  id: uuidv4(),
+  type,
+  label: `${type.charAt(0).toUpperCase() + type.slice(1)} Input`,
+  key: `${type}_${Date.now()}`,
+  placeholder: `Enter ${type}...`,
+  order: 0,
+  required: false,
+  options:
+    type === "select" || type === "radio"
+      ? [
+          { label: "Option 1", value: "option1" },
+          { label: "Option 2", value: "option2" },
+        ]
+      : undefined,
+});
+
+// Create a base button element
+export const createButtonElement = (
+  actionType: ButtonActionType
+): ButtonElement => ({
+  id: uuidv4(),
+  type: "button",
+  label: actionType.charAt(0).toUpperCase() + actionType.slice(1),
+  actionType,
+  order: 0,
+  variant: "primary",
+  size: "md",
+  apiConfig:
+    actionType === "api"
+      ? {
+          url: "https://api.example.com/data",
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          responseMapping: {},
+        }
+      : undefined,
+});
+
 const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
   // Input type options
   const inputTypes: InputTypeOption[] = [
@@ -57,46 +97,6 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
     { actionType: "reset", label: "Reset", icon: <Circle size={18} /> },
     { actionType: "clear", label: "Clear", icon: <Circle size={18} /> },
   ];
-
-  // Create a base input element
-  const createInputElement = (type: InputType): InputElement => ({
-    id: uuidv4(),
-    type,
-    label: `${type.charAt(0).toUpperCase() + type.slice(1)} Input`,
-    key: `${type}_${Date.now()}`,
-    placeholder: `Enter ${type}...`,
-    order: 0,
-    required: false,
-    options:
-      type === "select" || type === "radio"
-        ? [
-            { label: "Option 1", value: "option1" },
-            { label: "Option 2", value: "option2" },
-          ]
-        : undefined,
-  });
-
-  // Create a base button element
-  const createButtonElement = (
-    actionType: ButtonActionType
-  ): ButtonElement => ({
-    id: uuidv4(),
-    type: "button",
-    label: actionType.charAt(0).toUpperCase() + actionType.slice(1),
-    actionType,
-    order: 0,
-    variant: "primary",
-    size: "md",
-    apiConfig:
-      actionType === "api"
-        ? {
-            url: "https://api.example.com/data",
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            responseMapping: {},
-          }
-        : undefined,
-  });
 
   // Handle adding an input element
   const handleAddInput = (type: InputType) => {

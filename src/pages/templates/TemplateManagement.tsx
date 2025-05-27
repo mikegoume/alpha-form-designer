@@ -1,17 +1,18 @@
 import { useCallback, useState } from "react";
-import { DocumentData, Placeholder } from "../types/doc";
+import { DocumentData, Placeholder } from "../../types/doc";
 import {
   convertDocxToHtml,
   downloadDocument,
   extractPlaceholders,
   generateDocument,
-} from "../utils/documentUtils";
+} from "../../utils/documentUtils";
 import { motion } from "framer-motion";
-import DocumentUploader from "../components/DocsViewer/DocumentUploader";
-import DocumentEditor from "../components/DocsViewer/DocumentEditor";
-import DocumentPreview from "../components/DocsViewer/DocumentPreview";
-import PlaceholderManager from "../components/DocsViewer/PlaceholderManager";
-import JsonFormBuilder from "../components/DocsViewer/JsonFormBuilder";
+import DocumentUploader from "../../components/DocsViewer/DocumentUploader";
+import DocumentEditor from "../../components/DocsViewer/DocumentEditor";
+import DocumentPreview from "../../components/DocsViewer/DocumentPreview";
+import PlaceholderManager from "../../components/DocsViewer/PlaceholderManager";
+import JsonFormBuilder from "../../components/DocsViewer/JsonFormBuilder";
+import { v4 as uuidv4 } from "uuid";
 
 function TemplateManagement() {
   const [document, setDocument] = useState<DocumentData | null>(null);
@@ -25,6 +26,7 @@ function TemplateManagement() {
       const extractedPlaceholders = extractPlaceholders(htmlContent);
 
       setDocument({
+        id: uuidv4(),
         file,
         content: htmlContent,
         fileName: file.name,
