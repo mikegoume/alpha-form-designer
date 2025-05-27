@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   FormConfig,
   InputElement,
   ButtonElement,
   FormValues,
-} from "../types/form";
-import ElementsPanel from "../components/FormBuilder/ElementsPanel";
-import FormPreview from "../components/FormBuilder/FormPreview";
-import PropertiesPanel from "../components/FormBuilder/PropertiesPanel";
+} from "../../types/form";
+import ElementsPanel from "../../components/FormBuilder/ElementsPanel";
+import FormPreview from "../../components/FormBuilder/FormPreview";
+import PropertiesPanel from "../../components/FormBuilder/PropertiesPanel";
 import { v4 as uuidv4 } from "uuid";
 import { Plus, Save, Play, FileUp } from "lucide-react";
-import FormAssociation from "../components/FormBuilder/FormAssociation";
+import FormAssociation from "../../components/FormBuilder/FormAssociation";
+import FormsContext from "../../contexts/formsContext";
+import { useNavigate } from "react-router";
 
 // Initial empty form configuration
 const initialFormConfig: FormConfig = {
@@ -21,6 +23,9 @@ const initialFormConfig: FormConfig = {
 };
 
 const FormBuilder: React.FC = () => {
+  const { onSaveForm } = useContext(FormsContext);
+  const navigate = useNavigate();
+
   const [formConfig, setFormConfig] = useState<FormConfig>(initialFormConfig);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null
@@ -46,10 +51,10 @@ const FormBuilder: React.FC = () => {
       order: newOrder,
     };
 
-    setFormConfig({
-      ...formConfig,
-      elements: [...formConfig.elements, newElement],
-    });
+    setFormConfig((prevformconfig) => ({
+      ...prevformconfig,
+      elements: [...prevformconfig.elements, newElement],
+    }));
 
     setSelectedElementId(newElement.id);
   };
@@ -98,17 +103,8 @@ const FormBuilder: React.FC = () => {
 
   // Save the form configuration to JSON
   const handleSaveConfig = () => {
-    const configJson = JSON.stringify(formConfig, null, 2);
-    const blob = new Blob([configJson], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${formConfig.name.replace(/\s+/g, "_")}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    onSaveForm(formConfig);
+    navigate("/forms");
   };
 
   // Load a form configuration from JSON
@@ -159,6 +155,10 @@ const FormBuilder: React.FC = () => {
     setSelectedElementId(null);
     setFormValues({});
     setPreviewMode(false);
+  };
+
+  const handleResetConfig = () => {
+    setFormConfig(initialFormConfig);
   };
 
   return (
@@ -240,7 +240,10 @@ const FormBuilder: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Panel - Elements */}
             <div className="lg:col-span-3 flex flex-col gap-6">
-              <FormAssociation onAddElement={handleAddElement} />
+              <FormAssociation
+                onAddElement={handleAddElement}
+                onResetConfig={handleResetConfig}
+              />
               <ElementsPanel onAddElement={handleAddElement} />
             </div>
 

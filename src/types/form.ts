@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Form builder types
 export type InputType =
   | "text"
@@ -62,4 +63,16 @@ export interface FormConfig {
 
 export interface FormValues {
   [key: string]: any;
+}
+
+export interface InputTypeOption {
+  type: InputType;
+  label: string;
+  icon: React.ReactNode;
+}
+
+export interface ButtonTypeOption {
+  actionType: ButtonActionType;
+  label: string;
+  icon: React.ReactNode;
 }

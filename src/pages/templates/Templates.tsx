@@ -25,7 +25,7 @@ function Templates() {
       </header>
       <div className="p-6">
         {templates.map((template: DocumentData) => (
-          <FileItem key={template.id} item={template} />
+          <FileItem key={template.id} label={template.fileName} />
         ))}
       </div>
     </div>

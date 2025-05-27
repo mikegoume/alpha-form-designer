@@ -3,19 +3,17 @@ import Box from "@mui/material/Box";
 
 import { File } from "lucide-react";
 
-import { DocumentData } from "../../types/doc";
-
 type FileItemProperties = {
-  item: DocumentData;
+  label: string;
 };
 
 /**
  * The file item.
  */
 function FileItem(properties: FileItemProperties) {
-  const { item } = properties;
+  const { label } = properties;
 
-  if (!item) {
+  if (!label) {
     return null;
   }
 
@@ -29,7 +27,7 @@ function FileItem(properties: FileItemProperties) {
       </div>
       <div className="flex shrink flex-col justify-center text-center">
         <Typography className="truncate text-md font-medium">
-          {item.fileName}
+          {label}
         </Typography>
       </div>
     </Box>

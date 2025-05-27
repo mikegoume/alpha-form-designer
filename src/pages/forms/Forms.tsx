@@ -1,7 +1,13 @@
 import { Upload } from "lucide-react";
+import { useContext } from "react";
 import { Link } from "react-router";
+import FormsContext from "../../contexts/formsContext";
+import { FormConfig } from "../../types/form";
+import FileItem from "../../components/atoms/FileItem";
 
 function Forms() {
+  const { forms } = useContext(FormsContext);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -18,6 +24,11 @@ function Forms() {
           </div>
         </div>
       </header>
+      <div className="p-6">
+        {forms.map((form: FormConfig) => (
+          <FileItem key={form.id} label={form.name} />
+        ))}
+      </div>
     </div>
   );
 }
