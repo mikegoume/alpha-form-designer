@@ -6,7 +6,7 @@ const TemplatesRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<Templates />} />
-      <Route path="management" element={<TemplateManagement />} />
+      <Route path=":id" element={<TemplateManagement />} />
     </Routes>
   );
 };

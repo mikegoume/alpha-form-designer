@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { DocumentData, Placeholder } from "../../types/doc";
 import {
   convertDocxToHtml,
@@ -13,11 +13,27 @@ import DocumentPreview from "../../components/DocsViewer/DocumentPreview";
 import PlaceholderManager from "../../components/DocsViewer/PlaceholderManager";
 import JsonFormBuilder from "../../components/DocsViewer/JsonFormBuilder";
 import { v4 as uuidv4 } from "uuid";
+import { useParams } from "react-router";
+import TemplatesContext from "../../contexts/templatesContext";
 
 function TemplateManagement() {
   const [document, setDocument] = useState<DocumentData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentStep, setCurrentStep] = useState<"upload" | "edit">("upload");
+
+  const { templates } = useContext(TemplatesContext);
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id !== "upload") {
+      setCurrentStep("edit");
+    }
+    const template = templates.find((template) => template.id === id);
+
+    if (template) {
+      setDocument(template as DocumentData);
+    }
+  }, [id, templates]);
 
   const handleFileSelect = async (file: File) => {
     try {
@@ -78,13 +94,6 @@ function TemplateManagement() {
       placeholders: document.placeholders.filter((p) => p.id !== id),
     });
   };
-
-  // const handleFormValueChange = (fieldId: string, value: string) => {
-  //   setFormValues({
-  //     ...formValues,
-  //     [fieldId]: value,
-  //   });
-  // };
 
   const handleExport = async () => {
     if (!document?.content) return;
@@ -150,14 +159,9 @@ function TemplateManagement() {
                 />
                 <JsonFormBuilder
                   formData={{ title: "", fields: [] }}
-                  onFormUpdate={() => {}}
+                  onFormUpdate={() => { }}
                   placeholderNames={getPlaceholderNames()}
                 />
-                {/* <FormRenderer
-                  formData={formData}
-                  formValues={formValues}
-                  onFormValueChange={handleFormValueChange}
-                /> */}
               </div>
             </div>
           )
