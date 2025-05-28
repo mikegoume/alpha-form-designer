@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint ./src --config ./eslint.config.mjs",
-    "lint:fix": "eslint --fix ./src --config ./eslint.config.mjs",
+    "lint": "eslint ./src --config ./eslint.config.js",
+    "lint:fix": "eslint --fix ./src --config ./eslint.config.js",
     "preview": "vite preview"
   },
   "dependencies": {

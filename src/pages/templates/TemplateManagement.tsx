@@ -1,168 +1,135 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { DocumentData, Placeholder } from '../../types/doc';
-import { convertDocxToHtml, downloadDocument, extractPlaceholders, generateDocument } from '../../utils/documentUtils';
-import { motion } from 'framer-motion';
-import DocumentUploader from '../../components/DocsViewer/DocumentUploader';
-import DocumentEditor from '../../components/DocsViewer/DocumentEditor';
-import DocumentPreview from '../../components/DocsViewer/DocumentPreview';
-import PlaceholderManager from '../../components/DocsViewer/PlaceholderManager';
-import JsonFormBuilder from '../../components/DocsViewer/JsonFormBuilder';
-import { v4 as uuidv4 } from 'uuid';
-import { useParams } from 'react-router';
-import TemplatesContext from '../../contexts/templatesContext';
+import { useContext, useEffect, useState } from "react";
+import { DocumentData, Placeholder } from "../../types/doc";
+import {
+  downloadDocument,
+  extractPlaceholders,
+  generateDocument,
+} from "../../utils/documentUtils";
+
+import DocumentEditor from "../../components/DocsViewer/DocumentEditor";
+import DocumentPreview from "../../components/DocsViewer/DocumentPreview";
+import PlaceholderManager from "../../components/DocsViewer/PlaceholderManager";
+import TemplatesContext from "../../contexts/templatesContext";
+import { useParams } from "react-router";
 
 function TemplateManagement() {
-	const [document, setDocument] = useState<DocumentData | null>(null);
-	const [isEditing, setIsEditing] = useState(false);
-	const [currentStep, setCurrentStep] = useState<'upload' | 'edit'>('upload');
+  const { templates, uploadedDocument } = useContext(TemplatesContext);
 
-	const { templates } = useContext(TemplatesContext);
-	const { id } = useParams();
+  const [document, setDocument] = useState<DocumentData | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-	useEffect(() => {
-		if (id !== 'upload') {
-			setCurrentStep('edit');
-		}
+  const { id } = useParams();
 
-		const template = templates.find((template) => template.id === id);
+  useEffect(() => {
+    if (uploadedDocument) {
+      console.log(uploadedDocument);
+      setDocument(uploadedDocument);
+    } else if (id) {
+      const template = templates.find((template) => template.id === id);
+      if (template) {
+        setDocument(template);
+      }
+    }
+  }, [id, templates, uploadedDocument]);
 
-		if (template) {
-			setDocument(template as DocumentData);
-		}
-	}, [id, templates]);
+  const handleEditorSave = (newContent: string) => {
+    if (!document) return;
 
-	const handleFileSelect = async (file: File) => {
-		try {
-			const arrayBuffer = await file.arrayBuffer();
-			const htmlContent = await convertDocxToHtml(arrayBuffer);
-			const extractedPlaceholders = extractPlaceholders(htmlContent);
+    const extractedPlaceholders = extractPlaceholders(newContent);
 
-			setDocument({
-				id: uuidv4(),
-				file,
-				content: htmlContent,
-				fileName: file.name,
-				placeholders: extractedPlaceholders
-			});
+    setDocument({
+      ...document,
+      content: newContent,
+      placeholders: extractedPlaceholders,
+    });
 
-			setCurrentStep('edit');
-		} catch (error) {
-			console.error('Error processing document:', error);
-		}
-	};
+    setIsEditing(false);
+  };
 
-	const handleEditorSave = (newContent: string) => {
-		if (!document) return;
+  const handlePlaceholderAdded = (name: string) => {
+    if (!document) return;
 
-		const extractedPlaceholders = extractPlaceholders(newContent);
+    const newPlaceholder: Placeholder = {
+      id: `placeholder-${Date.now()}`,
+      name,
+    };
 
-		setDocument({
-			...document,
-			content: newContent,
-			placeholders: extractedPlaceholders
-		});
+    setDocument({
+      ...document,
+      placeholders: [...document.placeholders, newPlaceholder],
+    });
+  };
 
-		setIsEditing(false);
-	};
+  const handlePlaceholderRemoved = (id: string) => {
+    if (!document) return;
 
-	const handlePlaceholderAdded = (name: string) => {
-		if (!document) return;
+    const placeholderToRemove = document.placeholders.find((p) => p.id === id);
 
-		const newPlaceholder: Placeholder = {
-			id: `placeholder-${Date.now()}`,
-			name
-		};
+    if (!placeholderToRemove) return;
 
-		setDocument({
-			...document,
-			placeholders: [...document.placeholders, newPlaceholder]
-		});
-	};
+    setDocument({
+      ...document,
+      placeholders: document.placeholders.filter((p) => p.id !== id),
+    });
+  };
 
-	const handlePlaceholderRemoved = (id: string) => {
-		if (!document) return;
+  const handleExport = async () => {
+    if (!document?.content) return;
 
-		const placeholderToRemove = document.placeholders.find((p) => p.id === id);
+    try {
+      const blob = await generateDocument(document.content, {});
+      downloadDocument(blob, `filled_${document.fileName}`);
+    } catch (error) {
+      console.error("Error generating document:", error);
+    }
+  };
 
-		if (!placeholderToRemove) return;
+  const handleEditDocumentName = (newName: string) => {
+    setDocument((prevDoc) =>
+      prevDoc
+        ? {
+            ...prevDoc,
+            fileName: newName,
+          }
+        : null
+    );
+  };
 
-		setDocument({
-			...document,
-			placeholders: document.placeholders.filter((p) => p.id !== id)
-		});
-	};
-
-	const handleExport = async () => {
-		if (!document?.content) return;
-
-		try {
-			const blob = await generateDocument(document.content, {});
-			downloadDocument(blob, `filled_${document.fileName}`);
-		} catch (error) {
-			console.error('Error generating document:', error);
-		}
-	};
-
-	const getPlaceholderNames = useCallback(() => {
-		if (!document) return [];
-
-		return document.placeholders.map((p) => p.name);
-	}, [document]);
-
-	return (
-		<div className="min-h-screen flex flex-col bg-neutral-100">
-			<main className="flex-1 container mx-auto py-8 px-4">
-				{currentStep === 'upload' ? (
-					<div className="max-w-2xl mx-auto">
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="text-center mb-8"
-						>
-							<h1 className="text-3xl font-bold text-neutral-800 mb-2">Document Form Builder</h1>
-							<p className="text-neutral-600 max-w-lg mx-auto">
-								Upload a DOCX document, edit it to add placeholders, and create forms to fill your
-								document with data.
-							</p>
-						</motion.div>
-						<DocumentUploader onFileSelect={handleFileSelect} />
-					</div>
-				) : (
-					document && (
-						<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-							<div className="space-y-6 col-span-2">
-								{isEditing ? (
-									<DocumentEditor
-										content={document.content}
-										setContent={(content: string) => setDocument({ ...document, content })}
-										onSave={handleEditorSave}
-									/>
-								) : (
-									<DocumentPreview
-										document={document}
-										onExport={handleExport}
-										onEdit={() => setIsEditing(true)}
-									/>
-								)}
-							</div>
-							<div className="space-y-6">
-								<PlaceholderManager
-									placeholders={document.placeholders}
-									onPlaceholderAdded={handlePlaceholderAdded}
-									onPlaceholderRemoved={handlePlaceholderRemoved}
-								/>
-								<JsonFormBuilder
-									formData={{ title: '', fields: [] }}
-									onFormUpdate={() => {}}
-									placeholderNames={getPlaceholderNames()}
-								/>
-							</div>
-						</div>
-					)
-				)}
-			</main>
-		</div>
-	);
+  return (
+    document && (
+      <div className="min-h-screen flex flex-col bg-neutral-100">
+        <main className="flex-1 container mx-auto py-8 px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="space-y-6 col-span-2">
+              {isEditing ? (
+                <DocumentEditor
+                  content={document?.content}
+                  setContent={(content: string) =>
+                    setDocument({ ...document, content })
+                  }
+                  onSave={handleEditorSave}
+                />
+              ) : (
+                <DocumentPreview
+                  document={document}
+                  onExport={handleExport}
+                  onEdit={() => setIsEditing(true)}
+                  onEditDocumentName={handleEditDocumentName}
+                />
+              )}
+            </div>
+            <div className="space-y-6">
+              <PlaceholderManager
+                placeholders={document.placeholders}
+                onPlaceholderAdded={handlePlaceholderAdded}
+                onPlaceholderRemoved={handlePlaceholderRemoved}
+              />
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  );
 }
 
 export default TemplateManagement;
