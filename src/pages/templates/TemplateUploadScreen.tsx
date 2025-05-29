@@ -22,7 +22,11 @@ function TemplateUploadScreen() {
         id: uuidv4(),
         file,
         content: htmlContent,
-        fileName: file.name,
+        metadata: {
+          fileName: file.name,
+          description: "",
+          tags: [],
+        },
         placeholders: extractedPlaceholders,
         associatedFormId: [],
       };

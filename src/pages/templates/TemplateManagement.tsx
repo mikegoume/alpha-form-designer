@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { DocumentData, Placeholder } from "../../types/doc";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { DocumentData } from "../../types/doc";
 import {
   downloadDocument,
   extractPlaceholders,
@@ -11,6 +11,9 @@ import DocumentPreview from "../../components/DocsViewer/DocumentPreview";
 import PlaceholderManager from "../../components/DocsViewer/PlaceholderManager";
 import TemplatesContext from "../../contexts/templatesContext";
 import { useParams } from "react-router";
+import MetadataManager, {
+  MetadataForm,
+} from "../../components/mollecules/MetadataManager";
 
 function TemplateManagement() {
   const { templates, uploadedDocument } = useContext(TemplatesContext);
@@ -19,8 +22,6 @@ function TemplateManagement() {
   const [isEditing, setIsEditing] = useState(false);
 
   const { id } = useParams();
-
-  console.log(document);
 
   useEffect(() => {
     if (uploadedDocument) {
@@ -47,39 +48,12 @@ function TemplateManagement() {
     setIsEditing(false);
   };
 
-  const handlePlaceholderAdded = (name: string) => {
-    if (!document) return;
-
-    const newPlaceholder: Placeholder = {
-      id: `placeholder-${Date.now()}`,
-      name,
-    };
-
-    setDocument({
-      ...document,
-      placeholders: [...document.placeholders, newPlaceholder],
-    });
-  };
-
-  const handlePlaceholderRemoved = (id: string) => {
-    if (!document) return;
-
-    const placeholderToRemove = document.placeholders.find((p) => p.id === id);
-
-    if (!placeholderToRemove) return;
-
-    setDocument({
-      ...document,
-      placeholders: document.placeholders.filter((p) => p.id !== id),
-    });
-  };
-
   const handleExport = async () => {
     if (!document?.content) return;
 
     try {
       const blob = await generateDocument(document.content, {});
-      downloadDocument(blob, `filled_${document.fileName}`);
+      downloadDocument(blob, `filled_${document.metadata.fileName}`);
     } catch (error) {
       console.error("Error generating document:", error);
     }
@@ -90,11 +64,29 @@ function TemplateManagement() {
       prevDoc
         ? {
             ...prevDoc,
-            fileName: newName,
+            metadata: {
+              ...prevDoc.metadata,
+              fileName: newName,
+            },
           }
         : null
     );
   };
+
+  const onMetadataUpdate = (metadata: MetadataForm) => {
+    setDocument((prevDoc) =>
+      prevDoc
+        ? {
+            ...prevDoc,
+            metadata,
+          }
+        : null
+    );
+  };
+
+  const showUpdateMetadataButton = useMemo(() => {
+    return !!uploadedDocument || isEditing;
+  }, [isEditing, uploadedDocument]);
 
   return (
     document && (
@@ -120,10 +112,11 @@ function TemplateManagement() {
               )}
             </div>
             <div className="space-y-6">
-              <PlaceholderManager
-                placeholders={document.placeholders}
-                onPlaceholderAdded={handlePlaceholderAdded}
-                onPlaceholderRemoved={handlePlaceholderRemoved}
+              <PlaceholderManager placeholders={document.placeholders} />
+              <MetadataManager
+                metadata={document.metadata}
+                showUpdateMetadataButton={showUpdateMetadataButton}
+                onSubmit={onMetadataUpdate}
               />
             </div>
           </div>

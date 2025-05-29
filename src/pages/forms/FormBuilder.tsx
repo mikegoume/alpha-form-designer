@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FormConfig,
   InputElement,
@@ -13,7 +13,7 @@ import PropertiesPanel from "../../components/FormBuilder/PropertiesPanel";
 import { v4 as uuidv4 } from "uuid";
 import FormAssociation from "../../components/FormBuilder/FormAssociation";
 import FormsContext from "../../contexts/formsContext";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import FormBuilderHeader from "../../components/FormBuilder/FormBuilderHeader";
 import TemplatesContext from "../../contexts/templatesContext";
 
@@ -26,7 +26,7 @@ export const initialFormConfig: FormConfig = {
 
 const FormBuilder: React.FC = () => {
   const { templates, onSaveTemplate } = useContext(TemplatesContext);
-  const { onSaveForm } = useContext(FormsContext);
+  const { forms, onSaveForm } = useContext(FormsContext);
   const navigate = useNavigate();
 
   const [formConfig, setFormConfig] = useState<FormConfig>(initialFormConfig);
@@ -38,6 +38,18 @@ const FormBuilder: React.FC = () => {
   );
   const [previewMode, setPreviewMode] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({});
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      const form = forms.find((form) => form.id === id);
+
+      if (form) {
+        setFormConfig(form);
+      }
+    }
+  }, [id, forms]);
 
   // Find the selected element from the form config
   const selectedElement = formConfig.elements.find(
@@ -181,6 +193,8 @@ const FormBuilder: React.FC = () => {
   const handleResetConfig = () => {
     setFormConfig(initialFormConfig);
   };
+
+  console.log(formConfig);
 
   return (
     <div className="min-h-screen bg-gray-50">

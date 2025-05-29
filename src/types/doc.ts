@@ -23,7 +23,11 @@ export interface DocumentData {
 	id: string;
 	file: File;
 	content: string;
-	fileName: string;
+	metadata: {
+		fileName: string;
+		description: string;
+		tags: string[];
+	}
 	placeholders: Placeholder[];
 	associatedFormId: string[];
 }

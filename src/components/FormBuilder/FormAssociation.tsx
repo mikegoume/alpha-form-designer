@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { ButtonElement, InputElement } from "../../types/form";
 import TemplatesContext from "../../contexts/templatesContext";
 import { createInputElement } from "../../pages/forms/helpers";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
@@ -54,7 +53,7 @@ function FormAssociation({
           >
             {templates.map((template) => (
               <MenuItem key={template.id} value={template.id}>
-                {template.fileName}
+                {template.metadata.fileName}
               </MenuItem>
             ))}
           </Select>

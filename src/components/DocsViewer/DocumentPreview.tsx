@@ -59,7 +59,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           {isUploading && (
             <TextField
               onChange={(e) => onEditDocumentName(e.target.value)}
-              value={document.fileName}
+              value={document.metadata.fileName}
             />
           )}
         </div>

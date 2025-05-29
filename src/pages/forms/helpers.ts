@@ -6,7 +6,7 @@ export const createInputElement = (type: InputType, label?: string): InputElemen
 	id: uuidv4(),
 	type,
 	label: label ?? `${type.charAt(0).toUpperCase() + type.slice(1)} Input`,
-	key: `${type}_${Date.now()}`,
+	key: `${label}`,
 	placeholder: `Enter ${type}...`,
 	order: 0,
 	required: false,
