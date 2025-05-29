@@ -24,6 +24,7 @@ function TemplateUploadScreen() {
         content: htmlContent,
         fileName: file.name,
         placeholders: extractedPlaceholders,
+        associatedFormId: [],
       };
 
       onUploadDocument(uploadedDocument);

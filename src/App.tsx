@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router";
-import Layout from "./components/Layout";
+import Layout from "./components/organisms/Layout";
 import TemplatesRouter from "./pages/templates";
 import FormsRouter from "./pages/forms";
 import TemplatesContext from "./contexts/templatesContext";
@@ -28,7 +28,14 @@ function App() {
   }
 
   function handleSaveTemplate(template: DocumentData) {
-    setTemplates([...templates, template]);
+    const index = templates.findIndex((t) => t.id === template.id);
+    if (index > -1) {
+      const newTemplates = [...templates];
+      newTemplates[index] = template;
+      setTemplates(newTemplates);
+    } else {
+      setTemplates([...templates, template]);
+    }
     setUploadedTemplate(null);
   }
 

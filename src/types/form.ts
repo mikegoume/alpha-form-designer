@@ -74,3 +74,26 @@ export interface ButtonTypeOption {
 	label: string;
 	icon: React.ReactNode;
 }
+
+export interface FormPreviewProps {
+	config: FormConfig;
+	formValues: FormValues;
+	onValueChange: (key: string, value: any) => void;
+	onSelectElement?: (id: string) => void;
+	selectedElementId?: string | null;
+	onReorderElements?: (elements: (InputElement | ButtonElement)[]) => void;
+	isEditable?: boolean;
+	onRemoveElement?: (id: string) => void;
+	onFormSubmit?: () => void;
+}
+
+export interface SortableItemProps {
+	id: string;
+	element: InputElement | ButtonElement;
+	selectedElementId?: string | null;
+	onSelectElement?: (id: string) => void;
+	onRemoveElement?: (id: string) => void;
+	formValues: FormValues;
+	onValueChange: (key: string, value: any) => void;
+	onButtonClick: () => void;
+}

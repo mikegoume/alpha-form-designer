@@ -20,9 +20,10 @@ function TemplateManagement() {
 
   const { id } = useParams();
 
+  console.log(document);
+
   useEffect(() => {
     if (uploadedDocument) {
-      console.log(uploadedDocument);
       setDocument(uploadedDocument);
     } else if (id) {
       const template = templates.find((template) => template.id === id);
