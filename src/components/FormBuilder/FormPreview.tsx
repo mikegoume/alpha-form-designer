@@ -197,11 +197,12 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         // Handle form submission (just log values for demo)
         // console.log('Form submitted with values:', formValues);
         if (onFormSubmit) {
+          console.log("submit");
           onFormSubmit();
         }
-        alert(
-          "Form submitted with values: " + JSON.stringify(formValues, null, 2)
-        );
+        // alert(
+        //   "Form submitted with values: " + JSON.stringify(formValues, null, 2)
+        // );
         break;
     }
   };

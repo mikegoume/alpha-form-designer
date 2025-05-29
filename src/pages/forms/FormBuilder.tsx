@@ -139,71 +139,22 @@ const FormBuilder: React.FC = () => {
     navigate("/forms");
   };
 
-  // Load a form configuration from JSON
-  const handleLoadConfig = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const config = JSON.parse(e.target?.result as string) as FormConfig;
-        setFormConfig(config);
-        setSelectedElementId(null);
-        setFormValues({});
-      } catch (error) {
-        console.error("Error parsing form configuration:", error);
-        alert("Invalid form configuration file");
-      }
-    };
-    reader.readAsText(file);
-
-    // Reset the input value so the same file can be loaded again
-    event.target.value = "";
-  };
-
   // Toggle preview mode
   const togglePreviewMode = () => {
     setPreviewMode(!previewMode);
     setSelectedElementId(null);
   };
 
-  // Reset form to a new empty configuration
-  const handleNewForm = () => {
-    if (formConfig.elements.length > 0) {
-      if (
-        !confirm(
-          "Are you sure you want to create a new form? Any unsaved changes will be lost."
-        )
-      ) {
-        return;
-      }
-    }
-
-    setFormConfig({
-      ...initialFormConfig,
-      id: uuidv4(),
-    });
-    setSelectedElementId(null);
-    setFormValues({});
-    setPreviewMode(false);
-  };
-
   const handleResetConfig = () => {
     setFormConfig(initialFormConfig);
   };
-
-  console.log(formConfig);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <FormBuilderHeader
         formConfig={formConfig}
         setFormConfig={setFormConfig}
-        handleNewForm={handleNewForm}
         handleSaveConfig={handleSaveConfig}
-        handleLoadConfig={handleLoadConfig}
         previewMode={previewMode}
         togglePreviewMode={togglePreviewMode}
       />
