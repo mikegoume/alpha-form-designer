@@ -10,7 +10,7 @@ const FormsContext = createContext<{
 	forms: [],
 	selectedFormId: null,
 	onSaveForm: () => {},
-	onSelectForm: () => {}
+	onSelectForm: () => {},
 });
 
 export default FormsContext;

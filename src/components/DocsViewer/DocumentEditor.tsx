@@ -10,7 +10,11 @@ interface DocumentEditorProps {
 	onSave: (content: string) => void;
 }
 
-const DocumentEditor: React.FC<DocumentEditorProps> = ({ content, setContent, onSave }) => {
+const DocumentEditor: React.FC<DocumentEditorProps> = ({
+	content,
+	setContent,
+	onSave,
+}) => {
 	const handleSave = () => {
 		onSave(content);
 	};

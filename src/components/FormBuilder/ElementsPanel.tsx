@@ -1,7 +1,15 @@
 import React from 'react';
-import { InputElement, ButtonElement, InputType, ButtonActionType } from '../../types/form';
+import {
+	InputElement,
+	ButtonElement,
+	InputType,
+	ButtonActionType,
+} from '../../types/form';
 import { buttonTypes, inputTypes } from '../../pages/forms/constants';
-import { createButtonElement, createInputElement } from '../../pages/forms/helpers';
+import {
+	createButtonElement,
+	createInputElement,
+} from '../../pages/forms/helpers';
 
 interface ElementsPanelProps {
 	onAddElement: (element: InputElement | ButtonElement) => void;

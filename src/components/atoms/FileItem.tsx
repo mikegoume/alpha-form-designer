@@ -26,7 +26,9 @@ function FileItem(properties: FileItemProperties) {
 				<File />
 			</div>
 			<div className="flex shrink flex-col justify-center text-center">
-				<Typography className="truncate text-md font-medium">{label}</Typography>
+				<Typography className="truncate text-md font-medium">
+					{label}
+				</Typography>
 			</div>
 		</Box>
 	);

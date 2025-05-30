@@ -3,7 +3,9 @@ import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 import { saveAs } from 'file-saver';
 import { Placeholder } from '../types/doc';
 
-export const convertDocxToHtml = async (arrayBuffer: ArrayBuffer): Promise<string> => {
+export const convertDocxToHtml = async (
+	arrayBuffer: ArrayBuffer,
+): Promise<string> => {
 	const result = await mammoth.convertToHtml({ arrayBuffer });
 	return result.value;
 };
@@ -22,7 +24,7 @@ export const extractPlaceholders = (htmlContent: string): Placeholder[] => {
 			placeholders.push({
 				id: `placeholder-${placeholders.length + 1}`,
 				name,
-				defaultValue: ''
+				defaultValue: '',
 			});
 		}
 	}
@@ -30,7 +32,10 @@ export const extractPlaceholders = (htmlContent: string): Placeholder[] => {
 	return placeholders;
 };
 
-export const fillPlaceholders = (htmlContent: string, data: Record<string, string>): string => {
+export const fillPlaceholders = (
+	htmlContent: string,
+	data: Record<string, string>,
+): string => {
 	let filledContent = htmlContent;
 
 	Object.entries(data).forEach(([key, value]) => {
@@ -90,16 +95,16 @@ const convertHtmlToDocxParagraphs = (htmlContent: string): Paragraph[] => {
 				paragraphs.push(
 					new Paragraph({
 						heading: HeadingLevel.HEADING_1,
-						children: createTextRuns(el)
-					})
+						children: createTextRuns(el),
+					}),
 				);
 				break;
 			case 'h2':
 				paragraphs.push(
 					new Paragraph({
 						heading: HeadingLevel.HEADING_2,
-						children: createTextRuns(el)
-					})
+						children: createTextRuns(el),
+					}),
 				);
 				break;
 			case 'ul':
@@ -108,8 +113,8 @@ const convertHtmlToDocxParagraphs = (htmlContent: string): Paragraph[] => {
 					paragraphs.push(
 						new Paragraph({
 							text: li.textContent?.trim() || '',
-							bullet: { level: 0 }
-						})
+							bullet: { level: 0 },
+						}),
 					);
 				});
 				break;
@@ -123,7 +128,10 @@ const convertHtmlToDocxParagraphs = (htmlContent: string): Paragraph[] => {
 	return paragraphs;
 };
 
-export const generateDocument = async (htmlContent: string, formData: Record<string, string>): Promise<Blob> => {
+export const generateDocument = async (
+	htmlContent: string,
+	formData: Record<string, string>,
+): Promise<Blob> => {
 	const filledContent = fillPlaceholders(htmlContent, formData);
 	const paragraphs = convertHtmlToDocxParagraphs(filledContent);
 
@@ -131,9 +139,9 @@ export const generateDocument = async (htmlContent: string, formData: Record<str
 		sections: [
 			{
 				properties: {},
-				children: paragraphs
-			}
-		]
+				children: paragraphs,
+			},
+		],
 	});
 
 	return await Packer.toBlob(doc);

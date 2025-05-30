@@ -27,7 +27,7 @@ export interface DocumentData {
 		fileName: string;
 		description: string;
 		tags: string[];
-	}
+	};
 	placeholders: Placeholder[];
 	associatedFormId: string[];
 }

@@ -5,14 +5,8 @@ import FormBuilder from './FormBuilder';
 const FormsRouter = () => {
 	return (
 		<Routes>
-			<Route
-				path="/"
-				element={<Forms />}
-			/>
-			<Route
-				path="/:formId"
-				element={<FormBuilder />}
-			/>
+			<Route path="/" element={<Forms />} />
+			<Route path="/:formId" element={<FormBuilder />} />
 		</Routes>
 	);
 };

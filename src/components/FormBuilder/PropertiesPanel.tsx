@@ -14,7 +14,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 	element,
 	onUpdateElement,
 	onRemoveElement,
-	formElements
+	formElements,
 }) => {
 	// Early return if element is undefined
 	if (!element) {
@@ -26,7 +26,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 	}
 
 	const [apiConfig, setApiConfig] = useState<APIConfig | undefined>(
-		'actionType' in element && element.actionType === 'api' ? element.apiConfig : undefined
+		'actionType' in element && element.actionType === 'api'
+			? element.apiConfig
+			: undefined,
 	);
 
 	// Update API config when element changes
@@ -62,13 +64,18 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
 	// Handle input parameter mapping change
 	const handleInputParamChange = (paramName: string, inputKey: string) => {
-		if (!('actionType' in element) || element.actionType !== 'api' || !apiConfig) return;
+		if (
+			!('actionType' in element) ||
+			element.actionType !== 'api' ||
+			!apiConfig
+		)
+			return;
 
 		const updatedParams = { ...(apiConfig.inputParams || {}) };
 
@@ -83,13 +90,18 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
 	// Handle body field mapping change
 	const handleBodyFieldChange = (fieldName: string, inputKey: string) => {
-		if (!('actionType' in element) || element.actionType !== 'api' || !apiConfig) return;
+		if (
+			!('actionType' in element) ||
+			element.actionType !== 'api' ||
+			!apiConfig
+		)
+			return;
 
 		const updatedBody = { ...(apiConfig.body || {}) };
 
@@ -104,23 +116,28 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
 	// Handle adding a new body field
 	const handleAddBodyField = () => {
-		if (!('actionType' in element) || element.actionType !== 'api' || !apiConfig) return;
+		if (
+			!('actionType' in element) ||
+			element.actionType !== 'api' ||
+			!apiConfig
+		)
+			return;
 
 		const availableInput = availableInputKeys.find(
-			(input) => !Object.values(apiConfig.body || {}).includes(input.key)
+			(input) => !Object.values(apiConfig.body || {}).includes(input.key),
 		);
 
 		if (!availableInput) return;
 
 		const updatedBody = {
 			...(apiConfig.body || {}),
-			[`field_${Object.keys(apiConfig.body || {}).length}`]: availableInput.key
+			[`field_${Object.keys(apiConfig.body || {}).length}`]: availableInput.key,
 		};
 
 		const updatedConfig = { ...apiConfig, body: updatedBody };
@@ -128,23 +145,30 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
 	// Handle adding a new input parameter
 	const handleAddInputParam = () => {
-		if (!('actionType' in element) || element.actionType !== 'api' || !apiConfig) return;
+		if (
+			!('actionType' in element) ||
+			element.actionType !== 'api' ||
+			!apiConfig
+		)
+			return;
 
 		const availableInput = availableInputKeys.find(
-			(input) => !Object.values(apiConfig.inputParams || {}).includes(input.key)
+			(input) =>
+				!Object.values(apiConfig.inputParams || {}).includes(input.key),
 		);
 
 		if (!availableInput) return;
 
 		const updatedParams = {
 			...(apiConfig.inputParams || {}),
-			[`param_${Object.keys(apiConfig.inputParams || {}).length}`]: availableInput.key
+			[`param_${Object.keys(apiConfig.inputParams || {}).length}`]:
+				availableInput.key,
 		};
 
 		const updatedConfig = { ...apiConfig, inputParams: updatedParams };
@@ -152,13 +176,21 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
 	// Handle response mapping change
-	const handleResponseMappingChange = (responseKey: string, formKey: string) => {
-		if (!('actionType' in element) || element.actionType !== 'api' || !apiConfig) return;
+	const handleResponseMappingChange = (
+		responseKey: string,
+		formKey: string,
+	) => {
+		if (
+			!('actionType' in element) ||
+			element.actionType !== 'api' ||
+			!apiConfig
+		)
+			return;
 
 		const updatedMapping = { ...(apiConfig.responseMapping || {}) };
 
@@ -173,23 +205,30 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
 	// Handle adding a new response mapping
 	const handleAddResponseMapping = () => {
-		if (!('actionType' in element) || element.actionType !== 'api' || !apiConfig) return;
+		if (
+			!('actionType' in element) ||
+			element.actionType !== 'api' ||
+			!apiConfig
+		)
+			return;
 
 		const availableInput = availableInputKeys.find(
-			(input) => !Object.values(apiConfig.responseMapping || {}).includes(input.key)
+			(input) =>
+				!Object.values(apiConfig.responseMapping || {}).includes(input.key),
 		);
 
 		if (!availableInput) return;
 
 		const updatedMapping = {
 			...(apiConfig.responseMapping || {}),
-			[`responseKey_${Object.keys(apiConfig.responseMapping || {}).length}`]: availableInput.key
+			[`responseKey_${Object.keys(apiConfig.responseMapping || {}).length}`]:
+				availableInput.key,
 		};
 
 		const updatedConfig = { ...apiConfig, responseMapping: updatedMapping };
@@ -197,7 +236,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			apiConfig: updatedConfig
+			apiConfig: updatedConfig,
 		});
 	};
 
@@ -220,17 +259,21 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 		const options = [...(element.options || [])];
 		options.push({
 			label: `Option ${options.length + 1}`,
-			value: `option${options.length + 1}`
+			value: `option${options.length + 1}`,
 		});
 
 		onUpdateElement({
 			...element,
-			options
+			options,
 		});
 	};
 
 	// Update an option
-	const handleUpdateOption = (index: number, key: 'label' | 'value', value: string) => {
+	const handleUpdateOption = (
+		index: number,
+		key: 'label' | 'value',
+		value: string,
+	) => {
 		if (!('options' in element) || !element.options) return;
 
 		const options = [...element.options];
@@ -238,7 +281,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			options
+			options,
 		});
 	};
 
@@ -251,7 +294,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 		onUpdateElement({
 			...element,
-			options
+			options,
 		});
 	};
 
@@ -276,7 +319,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 			<div className="p-4 space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto">
 				{/* Common properties for all elements */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+					<label className="block text-sm font-medium text-gray-700 mb-1">
+						Label
+					</label>
 					<input
 						type="text"
 						value={'label' in element ? element.label : ''}
@@ -302,11 +347,15 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
 						{element.type !== 'checkbox' && element.type !== 'radio' && (
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">Placeholder</label>
+								<label className="block text-sm font-medium text-gray-700 mb-1">
+									Placeholder
+								</label>
 								<input
 									type="text"
 									value={element.placeholder || ''}
-									onChange={(e) => handleTextChange('placeholder', e.target.value)}
+									onChange={(e) =>
+										handleTextChange('placeholder', e.target.value)
+									}
 									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 								/>
 							</div>
@@ -317,7 +366,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 								type="checkbox"
 								id="required"
 								checked={element.required || false}
-								onChange={(e) => handleCheckboxChange('required', e.target.checked)}
+								onChange={(e) =>
+									handleCheckboxChange('required', e.target.checked)
+								}
 								className="h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300 rounded"
 							/>
 							<label
@@ -332,7 +383,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 						{(element.type === 'select' || element.type === 'radio') && (
 							<div className="mt-4">
 								<div className="flex justify-between items-center mb-2">
-									<label className="block text-sm font-medium text-gray-700">Options</label>
+									<label className="block text-sm font-medium text-gray-700">
+										Options
+									</label>
 									<button
 										type="button"
 										onClick={handleAddOption}
@@ -351,14 +404,18 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 											<input
 												type="text"
 												value={option.label}
-												onChange={(e) => handleUpdateOption(index, 'label', e.target.value)}
+												onChange={(e) =>
+													handleUpdateOption(index, 'label', e.target.value)
+												}
 												placeholder="Label"
 												className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
 											/>
 											<input
 												type="text"
 												value={option.value}
-												onChange={(e) => handleUpdateOption(index, 'value', e.target.value)}
+												onChange={(e) =>
+													handleUpdateOption(index, 'value', e.target.value)
+												}
 												placeholder="Value"
 												className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
 											/>
@@ -380,7 +437,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 				{'actionType' in element && (
 					<>
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">Button Variant</label>
+							<label className="block text-sm font-medium text-gray-700 mb-1">
+								Button Variant
+							</label>
 							<select
 								value={element.variant || 'primary'}
 								onChange={(e) => handleTextChange('variant', e.target.value)}
@@ -394,7 +453,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">Button Size</label>
+							<label className="block text-sm font-medium text-gray-700 mb-1">
+								Button Size
+							</label>
 							<select
 								value={element.size || 'md'}
 								onChange={(e) => handleTextChange('size', e.target.value)}
@@ -409,28 +470,39 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 						{/* API-specific configuration */}
 						{element.actionType === 'api' && (
 							<div className="border-t border-gray-200 pt-4 mt-4">
-								<h3 className="text-sm font-medium text-gray-700 mb-3">API Configuration</h3>
+								<h3 className="text-sm font-medium text-gray-700 mb-3">
+									API Configuration
+								</h3>
 
 								<div className="space-y-3">
 									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-1">API URL</label>
+										<label className="block text-sm font-medium text-gray-700 mb-1">
+											API URL
+										</label>
 										<input
 											type="text"
 											value={apiConfig?.url || ''}
-											onChange={(e) => handleApiConfigChange('url', e.target.value)}
+											onChange={(e) =>
+												handleApiConfigChange('url', e.target.value)
+											}
 											placeholder="https://api.example.com/data/{userId}"
 											className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 										/>
 										<p className="mt-1 text-xs text-gray-500">
-											Use {'{paramName}'} syntax to include input values in the URL
+											Use {'{paramName}'} syntax to include input values in the
+											URL
 										</p>
 									</div>
 
 									<div>
-										<label className="block text-sm font-medium text-gray-700 mb-1">Method</label>
+										<label className="block text-sm font-medium text-gray-700 mb-1">
+											Method
+										</label>
 										<select
 											value={apiConfig?.method || 'GET'}
-											onChange={(e) => handleApiConfigChange('method', e.target.value)}
+											onChange={(e) =>
+												handleApiConfigChange('method', e.target.value)
+											}
 											className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 										>
 											<option value="GET">GET</option>
@@ -441,7 +513,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 									</div>
 
 									{/* Request Body Section (for POST and PUT) */}
-									{(apiConfig?.method === 'POST' || apiConfig?.method === 'PUT') && (
+									{(apiConfig?.method === 'POST' ||
+										apiConfig?.method === 'PUT') && (
 										<div className="border-t border-gray-200 pt-3 mt-3">
 											<div className="flex justify-between items-center mb-2">
 												<label className="block text-sm font-medium text-gray-700">
@@ -453,74 +526,78 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 													className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100 flex items-center"
 													disabled={availableInputKeys.length === 0}
 												>
-													<Plus
-														size={14}
-														className="mr-1"
-													/>
+													<Plus size={14} className="mr-1" />
 													Add Field
 												</button>
 											</div>
 
-											{apiConfig?.body && Object.entries(apiConfig.body).length > 0 ? (
-												Object.entries(apiConfig.body).map(([fieldName, inputKey]) => (
-													<div
-														key={fieldName}
-														className="flex items-center mb-2 space-x-2"
-													>
-														<input
-															type="text"
-															value={fieldName}
-															onChange={(e) => {
-																const oldValue = fieldName;
-																const newValue = e.target.value;
-																const updatedBody = {
-																	...(apiConfig.body || {})
-																};
-																delete updatedBody[oldValue];
-																updatedBody[newValue] = inputKey;
-																const updatedConfig = {
-																	...apiConfig,
-																	body: updatedBody
-																};
-																setApiConfig(updatedConfig);
-																onUpdateElement({
-																	...element,
-																	apiConfig: updatedConfig
-																});
-															}}
-															placeholder="Field Name"
-															className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
-														/>
-														<select
-															value={inputKey}
-															onChange={(e) =>
-																handleBodyFieldChange(fieldName, e.target.value)
-															}
-															className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+											{apiConfig?.body &&
+											Object.entries(apiConfig.body).length > 0 ? (
+												Object.entries(apiConfig.body).map(
+													([fieldName, inputKey]) => (
+														<div
+															key={fieldName}
+															className="flex items-center mb-2 space-x-2"
 														>
-															<option value="">-- Select Input Field --</option>
-															{availableInputKeys.map((input) => (
-																<option
-																	key={input.key}
-																	value={input.key}
-																>
-																	{input.label} ({input.key})
+															<input
+																type="text"
+																value={fieldName}
+																onChange={(e) => {
+																	const oldValue = fieldName;
+																	const newValue = e.target.value;
+																	const updatedBody = {
+																		...(apiConfig.body || {}),
+																	};
+																	delete updatedBody[oldValue];
+																	updatedBody[newValue] = inputKey;
+																	const updatedConfig = {
+																		...apiConfig,
+																		body: updatedBody,
+																	};
+																	setApiConfig(updatedConfig);
+																	onUpdateElement({
+																		...element,
+																		apiConfig: updatedConfig,
+																	});
+																}}
+																placeholder="Field Name"
+																className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+															/>
+															<select
+																value={inputKey}
+																onChange={(e) =>
+																	handleBodyFieldChange(
+																		fieldName,
+																		e.target.value,
+																	)
+																}
+																className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+															>
+																<option value="">
+																	-- Select Input Field --
 																</option>
-															))}
-														</select>
-														<button
-															type="button"
-															onClick={() => handleBodyFieldChange(fieldName, '')}
-															className="p-1 text-gray-400 hover:text-red-500"
-														>
-															<Trash2 size={14} />
-														</button>
-													</div>
-												))
+																{availableInputKeys.map((input) => (
+																	<option key={input.key} value={input.key}>
+																		{input.label} ({input.key})
+																	</option>
+																))}
+															</select>
+															<button
+																type="button"
+																onClick={() =>
+																	handleBodyFieldChange(fieldName, '')
+																}
+																className="p-1 text-gray-400 hover:text-red-500"
+															>
+																<Trash2 size={14} />
+															</button>
+														</div>
+													),
+												)
 											) : (
 												<p className="text-sm text-gray-500 italic">
-													No body fields configured. Add fields to send form values in the
-													request body.
+													No body fields configured. Add fields to send form
+													values in the request body.
 												</p>
 											)}
 										</div>
@@ -538,74 +615,76 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 												className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100 flex items-center"
 												disabled={availableInputKeys.length === 0}
 											>
-												<Plus
-													size={14}
-													className="mr-1"
-												/>
+												<Plus size={14} className="mr-1" />
 												Add Parameter
 											</button>
 										</div>
 
-										{apiConfig?.inputParams && Object.entries(apiConfig.inputParams).length > 0 ? (
-											Object.entries(apiConfig.inputParams).map(([paramName, inputKey]) => (
-												<div
-													key={paramName}
-													className="flex items-center mb-2 space-x-2"
-												>
-													<input
-														type="text"
-														value={paramName}
-														onChange={(e) => {
-															const oldValue = paramName;
-															const newValue = e.target.value;
-															const updatedParams = {
-																...(apiConfig.inputParams || {})
-															};
-															delete updatedParams[oldValue];
-															updatedParams[newValue] = inputKey;
-															const updatedConfig = {
-																...apiConfig,
-																inputParams: updatedParams
-															};
-															setApiConfig(updatedConfig);
-															onUpdateElement({
-																...element,
-																apiConfig: updatedConfig
-															});
-														}}
-														placeholder="Parameter Name"
-														className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
-													/>
-													<select
-														value={inputKey}
-														onChange={(e) =>
-															handleInputParamChange(paramName, e.target.value)
-														}
-														className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+										{apiConfig?.inputParams &&
+										Object.entries(apiConfig.inputParams).length > 0 ? (
+											Object.entries(apiConfig.inputParams).map(
+												([paramName, inputKey]) => (
+													<div
+														key={paramName}
+														className="flex items-center mb-2 space-x-2"
 													>
-														<option value="">-- Select Input Field --</option>
-														{availableInputKeys.map((input) => (
-															<option
-																key={input.key}
-																value={input.key}
-															>
-																{input.label} ({input.key})
-															</option>
-														))}
-													</select>
-													<button
-														type="button"
-														onClick={() => handleInputParamChange(paramName, '')}
-														className="p-1 text-gray-400 hover:text-red-500"
-													>
-														<Trash2 size={14} />
-													</button>
-												</div>
-											))
+														<input
+															type="text"
+															value={paramName}
+															onChange={(e) => {
+																const oldValue = paramName;
+																const newValue = e.target.value;
+																const updatedParams = {
+																	...(apiConfig.inputParams || {}),
+																};
+																delete updatedParams[oldValue];
+																updatedParams[newValue] = inputKey;
+																const updatedConfig = {
+																	...apiConfig,
+																	inputParams: updatedParams,
+																};
+																setApiConfig(updatedConfig);
+																onUpdateElement({
+																	...element,
+																	apiConfig: updatedConfig,
+																});
+															}}
+															placeholder="Parameter Name"
+															className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+														/>
+														<select
+															value={inputKey}
+															onChange={(e) =>
+																handleInputParamChange(
+																	paramName,
+																	e.target.value,
+																)
+															}
+															className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+														>
+															<option value="">-- Select Input Field --</option>
+															{availableInputKeys.map((input) => (
+																<option key={input.key} value={input.key}>
+																	{input.label} ({input.key})
+																</option>
+															))}
+														</select>
+														<button
+															type="button"
+															onClick={() =>
+																handleInputParamChange(paramName, '')
+															}
+															className="p-1 text-gray-400 hover:text-red-500"
+														>
+															<Trash2 size={14} />
+														</button>
+													</div>
+												),
+											)
 										) : (
 											<p className="text-sm text-gray-500 italic">
-												No URL parameters configured. Add parameters to use form values in the
-												API URL.
+												No URL parameters configured. Add parameters to use form
+												values in the API URL.
 											</p>
 										)}
 									</div>
@@ -622,75 +701,76 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 												className="px-2 py-1 text-xs bg-blue-50 text-blue-500 rounded hover:bg-blue-100 flex items-center"
 												disabled={availableInputKeys.length === 0}
 											>
-												<Plus
-													size={14}
-													className="mr-1"
-												/>
+												<Plus size={14} className="mr-1" />
 												Add Mapping
 											</button>
 										</div>
 
 										{apiConfig?.responseMapping &&
 										Object.entries(apiConfig.responseMapping).length > 0 ? (
-											Object.entries(apiConfig.responseMapping).map(([responseKey, formKey]) => (
-												<div
-													key={responseKey}
-													className="flex items-center mb-2 space-x-2"
-												>
-													<input
-														type="text"
-														value={responseKey}
-														onChange={(e) => {
-															const oldValue = responseKey;
-															const newValue = e.target.value;
-															const updatedMapping = {
-																...(apiConfig.responseMapping || {})
-															};
-															delete updatedMapping[oldValue];
-															updatedMapping[newValue] = formKey;
-															const updatedConfig = {
-																...apiConfig,
-																responseMapping: updatedMapping
-															};
-															setApiConfig(updatedConfig);
-															onUpdateElement({
-																...element,
-																apiConfig: updatedConfig
-															});
-														}}
-														placeholder="API Response Key"
-														className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
-													/>
-													<select
-														value={formKey}
-														onChange={(e) =>
-															handleResponseMappingChange(responseKey, e.target.value)
-														}
-														className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+											Object.entries(apiConfig.responseMapping).map(
+												([responseKey, formKey]) => (
+													<div
+														key={responseKey}
+														className="flex items-center mb-2 space-x-2"
 													>
-														<option value="">-- Select Form Field --</option>
-														{availableInputKeys.map((input) => (
-															<option
-																key={input.key}
-																value={input.key}
-															>
-																{input.label} ({input.key})
-															</option>
-														))}
-													</select>
-													<button
-														type="button"
-														onClick={() => handleResponseMappingChange(responseKey, '')}
-														className="p-1 text-gray-400 hover:text-red-500"
-													>
-														<Trash2 size={14} />
-													</button>
-												</div>
-											))
+														<input
+															type="text"
+															value={responseKey}
+															onChange={(e) => {
+																const oldValue = responseKey;
+																const newValue = e.target.value;
+																const updatedMapping = {
+																	...(apiConfig.responseMapping || {}),
+																};
+																delete updatedMapping[oldValue];
+																updatedMapping[newValue] = formKey;
+																const updatedConfig = {
+																	...apiConfig,
+																	responseMapping: updatedMapping,
+																};
+																setApiConfig(updatedConfig);
+																onUpdateElement({
+																	...element,
+																	apiConfig: updatedConfig,
+																});
+															}}
+															placeholder="API Response Key"
+															className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+														/>
+														<select
+															value={formKey}
+															onChange={(e) =>
+																handleResponseMappingChange(
+																	responseKey,
+																	e.target.value,
+																)
+															}
+															className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+														>
+															<option value="">-- Select Form Field --</option>
+															{availableInputKeys.map((input) => (
+																<option key={input.key} value={input.key}>
+																	{input.label} ({input.key})
+																</option>
+															))}
+														</select>
+														<button
+															type="button"
+															onClick={() =>
+																handleResponseMappingChange(responseKey, '')
+															}
+															className="p-1 text-gray-400 hover:text-red-500"
+														>
+															<Trash2 size={14} />
+														</button>
+													</div>
+												),
+											)
 										) : (
 											<p className="text-sm text-gray-500 italic">
-												No mappings configured. Add mappings to auto-fill form fields from API
-												responses.
+												No mappings configured. Add mappings to auto-fill form
+												fields from API responses.
 											</p>
 										)}
 									</div>

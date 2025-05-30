@@ -9,7 +9,12 @@ interface FormRendererProps {
 	onButtonClick?: () => void;
 }
 
-const FormRenderer: React.FC<FormRendererProps> = ({ element, value, onChange, onButtonClick }) => {
+const FormRenderer: React.FC<FormRendererProps> = ({
+	element,
+	value,
+	onChange,
+	onButtonClick,
+}) => {
 	// Render a button element
 	if ('actionType' in element) {
 		const { label, variant = 'primary', size = 'md' } = element;
@@ -18,14 +23,15 @@ const FormRenderer: React.FC<FormRendererProps> = ({ element, value, onChange, o
 		const variantClasses = {
 			primary: 'bg-blue-500 hover:bg-blue-600 text-white',
 			secondary: 'bg-purple-500 hover:bg-purple-600 text-white',
-			outline: 'bg-white border-2 border-blue-500 text-blue-500 hover:bg-blue-50',
-			ghost: 'bg-transparent text-blue-500 hover:bg-blue-50'
+			outline:
+				'bg-white border-2 border-blue-500 text-blue-500 hover:bg-blue-50',
+			ghost: 'bg-transparent text-blue-500 hover:bg-blue-50',
 		};
 
 		const sizeClasses = {
 			sm: 'px-3 py-1 text-sm',
 			md: 'px-4 py-2',
-			lg: 'px-6 py-3 text-lg'
+			lg: 'px-6 py-3 text-lg',
 		};
 
 		return (
@@ -109,10 +115,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ element, value, onChange, o
 					>
 						<option value="">{placeholder || 'Select an option'}</option>
 						{options.map((option) => (
-							<option
-								key={option.value}
-								value={option.value}
-							>
+							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>
 						))}
@@ -132,10 +135,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ element, value, onChange, o
 						required={required}
 						className="h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300 rounded"
 					/>
-					<label
-						htmlFor={key}
-						className="ml-2 block text-sm text-gray-700"
-					>
+					<label htmlFor={key} className="ml-2 block text-sm text-gray-700">
 						{label}
 					</label>
 				</div>
@@ -149,10 +149,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({ element, value, onChange, o
 					</div>
 					<div className="space-y-2">
 						{options.map((option) => (
-							<div
-								key={option.value}
-								className="flex items-center"
-							>
+							<div key={option.value} className="flex items-center">
 								<input
 									type="radio"
 									id={`${key}_${option.value}`}

@@ -6,7 +6,9 @@ interface DocumentUploaderProps {
 	onFileSelect: (file: File) => void;
 }
 
-const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFileSelect }) => {
+const DocumentUploader: React.FC<DocumentUploaderProps> = ({
+	onFileSelect,
+}) => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,8 +80,12 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFileSelect }) => 
 						<Upload className="h-8 w-8 text-primary-500" />
 					</div>
 					<div>
-						<p className="text-lg font-medium text-neutral-800">Upload your DOCX document</p>
-						<p className="text-neutral-500 mt-1">Drag and drop your file here, or click to select</p>
+						<p className="text-lg font-medium text-neutral-800">
+							Upload your DOCX document
+						</p>
+						<p className="text-neutral-500 mt-1">
+							Drag and drop your file here, or click to select
+						</p>
 					</div>
 					<button className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors">
 						<FileUp className="h-4 w-4" />

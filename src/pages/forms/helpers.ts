@@ -1,8 +1,16 @@
-import { ButtonActionType, ButtonElement, InputElement, InputType } from '../../types/form';
+import {
+	ButtonActionType,
+	ButtonElement,
+	InputElement,
+	InputType,
+} from '../../types/form';
 import { v4 as uuidv4 } from 'uuid';
 
 // Create a base input element
-export const createInputElement = (type: InputType, label?: string): InputElement => ({
+export const createInputElement = (
+	type: InputType,
+	label?: string,
+): InputElement => ({
 	id: uuidv4(),
 	type,
 	label: label ?? `${type.charAt(0).toUpperCase() + type.slice(1)} Input`,
@@ -14,13 +22,15 @@ export const createInputElement = (type: InputType, label?: string): InputElemen
 		type === 'select' || type === 'radio'
 			? [
 					{ label: 'Option 1', value: 'option1' },
-					{ label: 'Option 2', value: 'option2' }
+					{ label: 'Option 2', value: 'option2' },
 				]
-			: undefined
+			: undefined,
 });
 
 // Create a base button element
-export const createButtonElement = (actionType: ButtonActionType): ButtonElement => ({
+export const createButtonElement = (
+	actionType: ButtonActionType,
+): ButtonElement => ({
 	id: uuidv4(),
 	type: 'button',
 	label: actionType.charAt(0).toUpperCase() + actionType.slice(1),
@@ -34,7 +44,7 @@ export const createButtonElement = (actionType: ButtonActionType): ButtonElement
 					url: 'https://api.example.com/data',
 					method: 'GET',
 					headers: { 'Content-Type': 'application/json' },
-					responseMapping: {}
+					responseMapping: {},
 				}
-			: undefined
+			: undefined,
 });
