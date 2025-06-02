@@ -7,13 +7,18 @@ import {
 import { useContext } from "react";
 import TemplatesContext from "../../contexts/templatesContext";
 import { useNavigate } from "react-router";
+import { useSnackbar } from "../../contexts/SnackbarProvider";
 
 function TemplateUpload() {
   const navigate = useNavigate();
   const { onUploadDocument } = useContext(TemplatesContext);
+  const { showSnackbar } = useSnackbar();
 
   const handleFileSelect = async (file: File) => {
     try {
+      if (file) {
+        showSnackbar("File uploaded successfully", "success");
+      }
       const arrayBuffer = await file.arrayBuffer();
       const htmlContent = await convertDocxToHtml(arrayBuffer);
       const extractedPlaceholders = extractPlaceholders(htmlContent);

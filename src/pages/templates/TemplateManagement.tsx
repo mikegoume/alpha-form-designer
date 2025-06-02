@@ -13,12 +13,18 @@ import MetadataManager, {
 import TemplatesBuilderHeader from "../../components/mollecules/TemplatesBuilderHeader";
 import { Button } from "@mui/material";
 import { DownloadIcon, Edit, FormInput } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 function TemplateManagement() {
   const navigate = useNavigate();
 
   const { templates, uploadedDocument, onSaveTemplate } =
     useContext(TemplatesContext);
+  const { userType } = useAuth().user;
+
+  const isAdmin = useMemo(() => {
+    return userType === "admin";
+  }, [userType]);
 
   const [document, setDocument] = useState<DocumentData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -67,6 +73,10 @@ function TemplateManagement() {
     return !!uploadedDocument || isEditing;
   }, [isEditing, uploadedDocument]);
 
+  if (!document) {
+    return;
+  }
+
   function handleSaveDcument() {
     onSaveTemplate({ ...document });
 
@@ -98,6 +108,7 @@ function TemplateManagement() {
       ) : (
         <div className="flex flex-row gap-6">
           <Button
+            sx={{ borderRadius: 2 }}
             variant="contained"
             color="primary"
             onClick={() => navigate("fill")}
@@ -106,15 +117,18 @@ function TemplateManagement() {
             <FormInput className="h-4 w-4" />
             Fill
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setIsEditing(true)}
-            className="text-neutral-600 hover:text-primary-500 px-3 py-1.5 text-sm rounded flex items-center gap-1.5 transition-colors"
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
+          {isAdmin && (
+            <Button
+              sx={{ borderRadius: 2 }}
+              variant="contained"
+              color="primary"
+              onClick={() => setIsEditing(true)}
+              className="text-neutral-600 hover:text-primary-500 px-3 py-1.5 text-sm rounded flex items-center gap-1.5 transition-colors"
+            >
+              <Edit className="h-4 w-4" />
+              Edit
+            </Button>
+          )}
         </div>
       );
     }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router";
 import Layout from "./components/organisms/Layout";
 import TemplatesRouter from "./pages/templates";
@@ -7,6 +7,11 @@ import TemplatesContext from "./contexts/templatesContext";
 import { DocumentData } from "./types/doc";
 import { FormConfig } from "./types/form";
 import FormsContext from "./contexts/formsContext";
+import AuthContext from "./contexts/auth/authContext";
+import { User } from "./types/auth";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/atoms/ProtectedRoute";
+import { SnackbarProvider } from "./contexts/SnackbarProvider";
 
 function App() {
   const [templates, setTemplates] = useState<DocumentData[]>([]);
@@ -18,6 +23,15 @@ function App() {
   );
   const [forms, setForms] = useState<FormConfig[]>([]);
   const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    console.log(storedUser);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   function handleSaveForm(form: FormConfig) {
     setForms([...forms, form]);
@@ -66,13 +80,23 @@ function App() {
           onSelectForm: handleSelectForm,
         }}
       >
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Navigate to="/templates" replace />} />
-            <Route path="/templates/*" element={<TemplatesRouter />} />
-            <Route path="/forms/*" element={<FormsRouter />} />
-          </Routes>
-        </Layout>
+        <AuthContext.Provider value={{ user, setUser }}>
+          <SnackbarProvider>
+            <Routes>
+              <Route element={<ProtectedRoute user={user} />}>
+                <Route element={<Layout />}>
+                  <Route
+                    path="/"
+                    element={<Navigate to="/templates" replace />}
+                  />
+                  <Route path="/templates/*" element={<TemplatesRouter />} />
+                  <Route path="/forms/*" element={<FormsRouter />} />
+                </Route>
+              </Route>
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </SnackbarProvider>
+        </AuthContext.Provider>
       </FormsContext.Provider>
     </TemplatesContext.Provider>
   );

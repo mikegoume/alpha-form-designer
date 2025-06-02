@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Link } from "react-router";
 import TemplatesContext from "../../contexts/templatesContext";
 import { DocumentData } from "../../types/doc";
@@ -7,8 +7,15 @@ import TemplatesHeader from "../../components/mollecules/TemplatesHeader";
 import TabPanel from "../../components/atoms/TabPanel";
 import TemplateUpload from "./TemplateUpload";
 import { Typography } from "@mui/material";
+import { useAuth } from "../../hooks/useAuth";
 
 function Templates() {
+  const { userType } = useAuth().user;
+
+  const isAdmin = useMemo(() => {
+    return userType === "admin";
+  }, [userType]);
+
   const [tabValue, setTabValue] = useState(0);
 
   const { templates } = useContext(TemplatesContext);
@@ -32,12 +39,14 @@ function Templates() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TemplatesHeader value={tabValue} handleChange={handleTabChange} />
-      <TemplateUpload />
+      {isAdmin && <TemplateUpload />}
       <div className="flex flex-col gap-6">
-        <div className="mx-8">
-          <Typography variant="button">{"Recent Templates"}</Typography>
-          {renderTemplates(templates)}
-        </div>
+        {templates.length > 0 && (
+          <div className="mx-8">
+            <Typography variant="button">{"Recent Templates"}</Typography>
+            {renderTemplates(templates)}
+          </div>
+        )}
         <div className="mx-8">
           <Typography variant="button">{"All Templates"}</Typography>
           <TabPanel value={tabValue} index={0}>
