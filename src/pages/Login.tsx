@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextField, Button } from "@mui/material";
+import { TextField } from "@mui/material";
 import { z } from "zod/v4";
 import { v4 as uuidv4 } from "uuid";
 import { useContext } from "react";
@@ -55,14 +55,13 @@ function Login() {
         error={!!errors.password}
         helperText={errors.password?.message}
       />
-      <Button
-        variant="contained"
-        color="primary"
+      <button
+        className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
         disabled={!isValid}
         type="submit"
       >
         Login
-      </Button>
+      </button>
     </form>
   );
 }

@@ -2,16 +2,15 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { DocumentData } from "../../types/doc";
 import { extractPlaceholders } from "../../utils/documentUtils";
 
-import DocumentEditor from "../../components/DocsViewer/DocumentEditor";
-import DocumentPreview from "../../components/DocsViewer/DocumentPreview";
-import PlaceholderManager from "../../components/DocsViewer/PlaceholderManager";
+import DocumentEditor from "../../components/mollecules/DocumentEditor";
+import DocumentPreview from "../../components/mollecules/DocumentPreview";
+import PlaceholderManager from "../../components/mollecules/PlaceholderManager";
 import TemplatesContext from "../../contexts/templatesContext";
 import { useNavigate, useParams } from "react-router";
 import MetadataManager, {
   MetadataForm,
 } from "../../components/mollecules/MetadataManager";
 import TemplatesBuilderHeader from "../../components/mollecules/TemplatesBuilderHeader";
-import { Button } from "@mui/material";
 import { DownloadIcon, Edit, FormInput } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -86,48 +85,39 @@ function TemplateManagement() {
   const renderActionButtons = () => {
     if (isEditing) {
       return (
-        <Button
-          variant="contained"
-          color="primary"
+        <button
+          className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
           onClick={() => handleEditorSave(document.content)}
         >
           Save
-        </Button>
+        </button>
       );
     } else {
       return isUploading ? (
-        <Button
-          variant="contained"
-          color="primary"
+        <button
+          className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
           onClick={handleSaveDcument}
-          className="bg-primary-500 text-white px-3 py-1.5 text-sm rounded flex items-center gap-1.5 hover:bg-primary-600 transition-colors"
         >
           <DownloadIcon className="h-4 w-4" />
           Save
-        </Button>
+        </button>
       ) : (
         <div className="flex flex-row gap-6">
-          <Button
-            sx={{ borderRadius: 2 }}
-            variant="contained"
-            color="primary"
+          <button
+            className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
             onClick={() => navigate("fill")}
-            className="text-neutral-600 hover:text-primary-500 px-3 py-1.5 text-sm rounded flex items-center gap-1.5 transition-colors"
           >
             <FormInput className="h-4 w-4" />
             Fill
-          </Button>
+          </button>
           {isAdmin && (
-            <Button
-              sx={{ borderRadius: 2 }}
-              variant="contained"
-              color="primary"
+            <button
+              className="bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
               onClick={() => setIsEditing(true)}
-              className="text-neutral-600 hover:text-primary-500 px-3 py-1.5 text-sm rounded flex items-center gap-1.5 transition-colors"
             >
               <Edit className="h-4 w-4" />
               Edit
-            </Button>
+            </button>
           )}
         </div>
       );

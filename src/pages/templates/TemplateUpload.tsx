@@ -1,4 +1,4 @@
-import DocumentUploader from "../../components/DocsViewer/DocumentUploader";
+import DocumentUploader from "../../components/mollecules/DocumentUploader";
 import { v4 as uuidv4 } from "uuid";
 import {
   convertDocxToHtml,
