@@ -43,7 +43,7 @@ function ApplicationHeader() {
   };
 
   return (
-    <div className="flex flex-row items-center justify-between gap-6 p-8">
+    <div className="flex flex-row items-center justify-between gap-6 px-8 py-2 border-b">
       <TextField
         fullWidth
         id="input-with-icon-textfield"
@@ -53,7 +53,7 @@ function ApplicationHeader() {
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <Search className="w-5 h-5" />
               </InputAdornment>
             ),
           },
@@ -61,18 +61,34 @@ function ApplicationHeader() {
         sx={{ maxWidth: "60%" }}
       />
       <div className="flex flex-row gap-6">
-        <IconButton>
+        <IconButton
+          size="medium"
+          sx={{
+            sizeMedium: {
+              height: 36,
+            },
+          }}
+        >
           <Bell />
           <CartBadge badgeContent={12} color="primary" overlap="circular" />
         </IconButton>
         <IconButton
           onClick={handleClick}
-          size="small"
+          size="medium"
           aria-controls={open ? "account-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
+          sx={{
+            width: 36,
+            height: 36,
+            maxHeight: 36,
+          }}
         >
-          <Avatar alt={username} src="/static/images/avatar/1.jpg" />
+          <Avatar
+            alt={username}
+            src="/static/images/avatar/1.jpg"
+            sx={{ width: 36, height: 36 }}
+          />
         </IconButton>
       </div>
       <Menu

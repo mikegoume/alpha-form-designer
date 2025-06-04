@@ -1,11 +1,19 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextField } from "@mui/material";
+import {
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import { z } from "zod/v4";
 import { v4 as uuidv4 } from "uuid";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import AuthContext from "../contexts/auth/authContext";
+import { Eye, EyeOff, Mail } from "lucide-react";
+import LoginImage from "../assets/login2.png";
 
 const schema = z.object({
   email: z.email("Invalid email").min(1, "Required"),
@@ -15,6 +23,8 @@ const schema = z.object({
 export type LoginInputs = z.infer<typeof schema>;
 
 function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -25,6 +35,20 @@ function Login() {
   } = useForm<LoginInputs>({
     resolver: zodResolver(schema),
   });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
+
+  const handleMouseUpPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
 
   const onSubmit = (data: LoginInputs) => {
     const userData = {
@@ -41,28 +65,92 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
-      <TextField
-        label="Email"
-        {...register("email")}
-        error={!!errors.email}
-        helperText={errors.email?.message}
-      />
-      <TextField
-        label="Password"
-        type="password"
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-      />
-      <button
-        className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
-        disabled={!isValid}
-        type="submit"
-      >
-        Login
-      </button>
-    </form>
+    <div className="w-full h-[100vh] flex flex-1 bg-primary-100 p-4">
+      <div className="w-2/5 h-full flex items-center justify-center bg-white rounded-2xl">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-8 p-8 w-2/3 h-1/2 items-center justify-center"
+        >
+          <div className="flex flex-col items-center justify-center gap-4">
+            <h1 className="text-4xl font-bold text-neutral-800">Login</h1>
+            <h1 className="text-xl text-neutral-800">
+              Welcome to Dynamic Form Builder
+            </h1>
+          </div>
+          <div className="flex flex-col gap-8 w-full">
+            <TextField
+              fullWidth
+              label="Email"
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Mail />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+            <div className="flex flex-col gap-2">
+              <TextField
+                fullWidth
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        <IconButton
+                          aria-label={
+                            showPassword
+                              ? "hide the password"
+                              : "display the password"
+                          }
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          onMouseUp={handleMouseUpPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <EyeOff /> : <Eye />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+              <div className="flex flex-row justify-between items-center">
+                <FormControlLabel
+                  control={<Checkbox color="primary" />}
+                  label="Remember me"
+                />
+                <a
+                  href="/forgot-password"
+                  className="text-primary-600 hover:text-primary-700 transition-colors ml-auto"
+                >
+                  Forgot Password?
+                </a>
+              </div>
+            </div>
+          </div>
+          <button
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors randed-lg w-1/2"
+            disabled={!isValid}
+            type="submit"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+      <div className="w-3/5 h-full flex items-center">
+        <img src={LoginImage} alt="Description" className="w-full h-2/3" />
+      </div>
+    </div>
   );
 }
 
