@@ -1,21 +1,20 @@
-/* eslint-disable react-refresh/only-export-components */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useState } from "react";
-import {
-  FormConfig,
-  InputElement,
-  ButtonElement,
-  FormValues,
-} from "../../types/form";
+import { useNavigate, useParams } from "react-router";
+import { v4 as uuidv4 } from "uuid";
+
 import ElementsPanel from "../../components/FormBuilder/ElementsPanel";
+import FormAssociation from "../../components/FormBuilder/FormAssociation";
 import FormPreview from "../../components/FormBuilder/FormPreview";
 import PropertiesPanel from "../../components/FormBuilder/PropertiesPanel";
-import { v4 as uuidv4 } from "uuid";
-import FormAssociation from "../../components/FormBuilder/FormAssociation";
-import FormsContext from "../../contexts/formsContext";
-import { useNavigate, useParams } from "react-router";
 import FormBuilderHeader from "../../components/mollecules/FormBuilderHeader";
+import FormsContext from "../../contexts/formsContext";
 import TemplatesContext from "../../contexts/templatesContext";
+import {
+  ButtonElement,
+  FormConfig,
+  FormValues,
+  InputElement,
+} from "../../types/form";
 
 // Initial empty form configuration
 export const initialFormConfig: FormConfig = {
@@ -34,7 +33,7 @@ const FormBuilder: React.FC = () => {
     string | null
   >(null);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
-    null
+    null,
   );
   const [previewMode, setPreviewMode] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({});
@@ -53,7 +52,7 @@ const FormBuilder: React.FC = () => {
 
   // Find the selected element from the form config
   const selectedElement = formConfig.elements.find(
-    (el) => el.id === selectedElementId
+    (el) => el.id === selectedElementId,
   );
 
   // Handle adding a new element to the form
@@ -79,12 +78,12 @@ const FormBuilder: React.FC = () => {
 
   // Handle updating an existing element
   const handleUpdateElement = (
-    updatedElement: InputElement | ButtonElement
+    updatedElement: InputElement | ButtonElement,
   ) => {
     setFormConfig({
       ...formConfig,
       elements: formConfig.elements.map((el) =>
-        el.id === updatedElement.id ? updatedElement : el
+        el.id === updatedElement.id ? updatedElement : el,
       ),
     });
   };
@@ -111,7 +110,7 @@ const FormBuilder: React.FC = () => {
 
   // Handle reordering elements
   const handleReorderElements = (
-    elements: (InputElement | ButtonElement)[]
+    elements: (InputElement | ButtonElement)[],
   ) => {
     setFormConfig({
       ...formConfig,
@@ -123,7 +122,7 @@ const FormBuilder: React.FC = () => {
   const handleSaveConfig = () => {
     onSaveForm(formConfig);
     const associatedTemplate = templates.find(
-      (template) => template.id === associatedTemplateId
+      (template) => template.id === associatedTemplateId,
     );
 
     if (associatedTemplate) {

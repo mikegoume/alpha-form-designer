@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import { Upload, FileUp, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
 import { Button } from "@mui/material";
+import { motion } from "framer-motion";
+import { AlertCircle, Upload } from "lucide-react";
 
 interface DocumentUploaderProps {
   onFileSelect: (file: File) => void;

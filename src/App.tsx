@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
+
+import ProtectedRoute from "./components/atoms/ProtectedRoute";
 import Layout from "./components/organisms/Layout";
-import TemplatesRouter from "./pages/templates";
-import FormsRouter from "./pages/forms";
+import AuthContext from "./contexts/auth/authContext";
+import FormsContext from "./contexts/formsContext";
+import { SnackbarProvider } from "./contexts/SnackbarProvider";
 import TemplatesContext from "./contexts/templatesContext";
+import FormsRouter from "./pages/forms";
+import Login from "./pages/Login";
+import TemplatesRouter from "./pages/templates";
+import { User } from "./types/auth";
 import { DocumentData } from "./types/doc";
 import { FormConfig } from "./types/form";
-import FormsContext from "./contexts/formsContext";
-import AuthContext from "./contexts/auth/authContext";
-import { User } from "./types/auth";
-import Login from "./pages/Login";
-import ProtectedRoute from "./components/atoms/ProtectedRoute";
-import { SnackbarProvider } from "./contexts/SnackbarProvider";
 
 function App() {
   const [templates, setTemplates] = useState<DocumentData[]>([]);
   const [selectedTemplateId, setSelectedElementId] = useState<string | null>(
-    null
+    null,
   );
   const [uploadedTemplate, setUploadedTemplate] = useState<DocumentData | null>(
-    null
+    null,
   );
   const [forms, setForms] = useState<FormConfig[]>([]);
   const [selectedFormId, setSelectedFormId] = useState<string | null>(null);

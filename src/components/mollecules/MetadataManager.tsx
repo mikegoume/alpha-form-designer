@@ -1,7 +1,7 @@
-import { useForm, Controller } from "react-hook-form";
-import { motion } from "framer-motion";
-import { TextField } from "@mui/material";
 import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { TextField } from "@mui/material";
+import { motion } from "framer-motion";
 
 export type MetadataForm = {
   fileName: string;

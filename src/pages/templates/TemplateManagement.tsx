@@ -1,18 +1,18 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { DocumentData } from "../../types/doc";
-import { extractPlaceholders } from "../../utils/documentUtils";
+import { useNavigate, useParams } from "react-router";
+import { DownloadIcon, Edit, FormInput } from "lucide-react";
 
 import DocumentEditor from "../../components/mollecules/DocumentEditor";
 import DocumentPreview from "../../components/mollecules/DocumentPreview";
-import PlaceholderManager from "../../components/mollecules/PlaceholderManager";
-import TemplatesContext from "../../contexts/templatesContext";
-import { useNavigate, useParams } from "react-router";
 import MetadataManager, {
   MetadataForm,
 } from "../../components/mollecules/MetadataManager";
+import PlaceholderManager from "../../components/mollecules/PlaceholderManager";
 import TemplatesBuilderHeader from "../../components/mollecules/TemplatesBuilderHeader";
-import { DownloadIcon, Edit, FormInput } from "lucide-react";
+import TemplatesContext from "../../contexts/templatesContext";
 import { useAuth } from "../../hooks/useAuth";
+import { DocumentData } from "../../types/doc";
+import { extractPlaceholders } from "../../utils/documentUtils";
 
 function TemplateManagement() {
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ function TemplateManagement() {
             ...prevDoc,
             metadata,
           }
-        : null
+        : null,
     );
   };
 

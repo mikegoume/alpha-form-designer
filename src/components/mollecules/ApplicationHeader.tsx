@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import {
   Avatar,
   Badge,
@@ -7,12 +8,12 @@ import {
   styled,
   TextField,
 } from "@mui/material";
+import Divider from "@mui/material/Divider";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
 import { Bell, LogOut, Search, Settings } from "lucide-react";
-import { useRef, useState } from "react";
+
 import { useAuth } from "../../hooks/useAuth";
 
 const CartBadge = styled(Badge)`

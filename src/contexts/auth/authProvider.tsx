@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { User } from "../../types/auth";
 import AuthContext from "./authContext";
 

@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from "react-router";
+
 import { User } from "../../types/auth";
 
 type ProtectedRouteProps = {

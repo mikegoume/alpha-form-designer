@@ -1,4 +1,6 @@
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Checkbox,
@@ -7,13 +9,12 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { z } from "zod/v4";
-import { v4 as uuidv4 } from "uuid";
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router";
-import AuthContext from "../contexts/auth/authContext";
 import { Eye, EyeOff, Mail } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod/v4";
+
 import LoginImage from "../assets/login2.png";
+import AuthContext from "../contexts/auth/authContext";
 
 const schema = z.object({
   email: z.email("Invalid email").min(1, "Required"),
@@ -39,13 +40,13 @@ function Login() {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     event.preventDefault();
   };
 
   const handleMouseUpPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     event.preventDefault();
   };

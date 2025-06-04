@@ -1,17 +1,17 @@
 // src/context/SnackbarContext.tsx
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { Snackbar, Alert } from "@mui/material";
+import { createContext, ReactNode, useContext, useState } from "react";
+import { Alert, Snackbar } from "@mui/material";
 
 type SnackbarContextType = {
   showSnackbar: (
     message: string,
-    severity?: "success" | "error" | "warning" | "info"
+    severity?: "success" | "error" | "warning" | "info",
   ) => void;
 };
 
 const SnackbarContext = createContext<SnackbarContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useSnackbar = () => {
@@ -30,7 +30,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
 
   const showSnackbar = (
     msg: string,
-    sev: "success" | "error" | "warning" | "info" = "info"
+    sev: "success" | "error" | "warning" | "info" = "info",
   ) => {
     setMessage(msg);
     setSeverity(sev);

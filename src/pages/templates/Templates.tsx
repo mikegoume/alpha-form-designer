@@ -1,13 +1,14 @@
 import { useContext, useMemo, useState } from "react";
 import { Link } from "react-router";
-import TemplatesContext from "../../contexts/templatesContext";
-import { DocumentData } from "../../types/doc";
-import FileItem from "../../components/atoms/FileItem";
-import TemplatesHeader from "../../components/mollecules/TemplatesHeader";
-import TabPanel from "../../components/atoms/TabPanel";
-import TemplateUpload from "./TemplateUpload";
 import { Typography } from "@mui/material";
+
+import FileItem from "../../components/atoms/FileItem";
+import TabPanel from "../../components/atoms/TabPanel";
+import TemplatesHeader from "../../components/mollecules/TemplatesHeader";
+import TemplatesContext from "../../contexts/templatesContext";
 import { useAuth } from "../../hooks/useAuth";
+import { DocumentData } from "../../types/doc";
+import TemplateUpload from "./TemplateUpload";
 
 function Templates() {
   const { userType } = useAuth().user;

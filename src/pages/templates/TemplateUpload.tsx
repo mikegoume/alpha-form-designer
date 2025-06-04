@@ -1,13 +1,14 @@
-import DocumentUploader from "../../components/mollecules/DocumentUploader";
+import { useContext } from "react";
+import { useNavigate } from "react-router";
 import { v4 as uuidv4 } from "uuid";
+
+import DocumentUploader from "../../components/mollecules/DocumentUploader";
+import { useSnackbar } from "../../contexts/SnackbarProvider";
+import TemplatesContext from "../../contexts/templatesContext";
 import {
   convertDocxToHtml,
   extractPlaceholders,
 } from "../../utils/documentUtils";
-import { useContext } from "react";
-import TemplatesContext from "../../contexts/templatesContext";
-import { useNavigate } from "react-router";
-import { useSnackbar } from "../../contexts/SnackbarProvider";
 
 function TemplateUpload() {
   const navigate = useNavigate();

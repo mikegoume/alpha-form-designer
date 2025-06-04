@@ -1,7 +1,8 @@
 import React from "react";
-import Sidebar from "../mollecules/Sidebar";
-import ApplicationHeader from "../mollecules/ApplicationHeader";
 import { Outlet } from "react-router";
+
+import ApplicationHeader from "../mollecules/ApplicationHeader";
+import Sidebar from "../mollecules/Sidebar";
 
 const Layout: React.FC = () => {
   return (

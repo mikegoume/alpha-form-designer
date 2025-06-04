@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useMemo, useState } from "react";
 import { useParams } from "react-router";
-import TemplatesContext from "../../contexts/templatesContext";
-import FormsContext from "../../contexts/formsContext";
-import FormPreview from "../../components/FormBuilder/FormPreview";
-import { FormValues } from "../../types/form";
 import { renderAsync } from "docx-preview";
 import JSZip from "jszip";
+
+import FormPreview from "../../components/FormBuilder/FormPreview";
 import FilledTemplateHeader from "../../components/mollecules/FilledTemplateHeader";
+import FormsContext from "../../contexts/formsContext";
+import TemplatesContext from "../../contexts/templatesContext";
+import { FormValues } from "../../types/form";
 
 function TemplateFillForm() {
   const { templates } = useContext(TemplatesContext);
@@ -25,7 +25,7 @@ function TemplateFillForm() {
 
   const selectedForm = useMemo(() => {
     return forms.find((form) =>
-      selectedTemplate?.associatedFormId.includes(form.id)
+      selectedTemplate?.associatedFormId.includes(form.id),
     );
   }, [forms, selectedTemplate?.associatedFormId]);
 

@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
-import { renderAsync } from "docx-preview";
-import { DocumentData } from "../../types/doc";
 import { useEffect, useRef } from "react";
+import { renderAsync } from "docx-preview";
+import { motion } from "framer-motion";
+
+import { DocumentData } from "../../types/doc";
 
 interface DocumentPreviewProps {
   document: DocumentData;

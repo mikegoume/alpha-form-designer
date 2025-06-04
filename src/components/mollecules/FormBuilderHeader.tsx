@@ -1,6 +1,7 @@
-import { Play, Save } from "lucide-react";
-import { ButtonElement, FormConfig } from "../../types/form";
 import { TextField } from "@mui/material";
+import { Play, Save } from "lucide-react";
+
+import { ButtonElement, FormConfig } from "../../types/form";
 
 interface IFormBuilderHeaderProps {
   formConfig: FormConfig;
@@ -18,7 +19,7 @@ function FormBuilderHeader({
 }: IFormBuilderHeaderProps) {
   const isSaveDisabled =
     formConfig.elements.filter(
-      (element) => (element as ButtonElement).actionType === "submit"
+      (element) => (element as ButtonElement).actionType === "submit",
     ).length === 0;
 
   return (

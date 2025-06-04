@@ -1,6 +1,6 @@
+import { useNavigate } from "react-router";
 import { Box, Tab, Tabs } from "@mui/material";
 import { Plus } from "lucide-react";
-import { useNavigate } from "react-router";
 
 function a11yProps(index: number) {
   return {
