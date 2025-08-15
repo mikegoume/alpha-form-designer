@@ -1,18 +1,10 @@
-import { useRef, useState } from "react";
-import {
-  Avatar,
-  Badge,
-  badgeClasses,
-  IconButton,
-  InputAdornment,
-  styled,
-  TextField,
-} from "@mui/material";
+import { useState } from "react";
+import { Avatar, Badge, badgeClasses, IconButton, styled } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Bell, LogOut, Search, Settings } from "lucide-react";
+import { Bell, LogOut, Settings } from "lucide-react";
 
 import { useAuth } from "../../hooks/useAuth";
 
@@ -25,7 +17,6 @@ const CartBadge = styled(Badge)`
 
 function ApplicationHeader() {
   const { username } = useAuth().user;
-  const searchText = useRef("");
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -39,28 +30,8 @@ function ApplicationHeader() {
     setAnchorEl(null);
   };
 
-  const handleOnChangeText = (text: string) => {
-    searchText.current = text;
-  };
-
   return (
-    <div className="flex flex-row items-center justify-between gap-6 px-8 py-2 border-b">
-      <TextField
-        fullWidth
-        id="input-with-icon-textfield"
-        onChange={(e) => handleOnChangeText(e.target.value)}
-        placeholder="Search Template"
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search className="w-5 h-5" />
-              </InputAdornment>
-            ),
-          },
-        }}
-        sx={{ maxWidth: "60%" }}
-      />
+    <div className="flex flex-row items-center justify-end gap-6 px-8 py-2 border-b">
       <div className="flex flex-row gap-6">
         <IconButton
           size="medium"
