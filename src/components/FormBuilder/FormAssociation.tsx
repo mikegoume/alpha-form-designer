@@ -1,16 +1,13 @@
-import { useContext } from "react";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
-import TemplatesContext from "../../contexts/templatesContext";
-import { createInputElement } from "../../pages/forms/helpers";
-import { ButtonElement, InputElement } from "../../types/form";
+import { ButtonElement } from "../../types/form";
 
 interface FormAssociationProps {
   associatedTemplateId: string | null;
   setAssociatedTemplateId: (templateId: string | null) => void;
-  onAddElement: (element: InputElement | ButtonElement) => void;
+  onAddElement: (element: ButtonElement) => void;
   onResetConfig: () => void;
 }
 
@@ -20,7 +17,7 @@ function FormAssociation({
   onAddElement,
   onResetConfig,
 }: FormAssociationProps) {
-  const { templates } = useContext(TemplatesContext);
+  const templates = [];
 
   const handleTemplateSelect = (templateId: string) => {
     setAssociatedTemplateId(templateId);
@@ -31,7 +28,7 @@ function FormAssociation({
 
     if (selectedTemplate) {
       selectedTemplate.placeholders.map((placeholder) => {
-        onAddElement(createInputElement("text", placeholder.name));
+        // onAddElement(createInputElement("text", placeholder.name));
       });
     }
   };

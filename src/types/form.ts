@@ -1,98 +1,126 @@
-// Form builder types
-export type InputType =
-  | "text"
-  | "number"
-  | "email"
-  | "password"
-  | "select"
-  | "checkbox"
-  | "radio"
-  | "textarea"
-  | "date";
+import { ReactNode } from "react";
+import { PickerValue } from "@mui/x-date-pickers/internals";
+import { Dayjs } from "dayjs";
 
-export type ButtonActionType = "api" | "reset" | "submit" | "clear";
+export interface Form {
+  templateId: number;
+  id: number;
+  name: string;
+  description: string;
+  creationTs: string;
+  version: string;
+  json: string;
+  status: string;
+}
 
-export interface FormElement {
+export interface ButtonElement {
   id: string;
-  order: number;
-}
-
-export interface InputElement extends FormElement {
-  type: InputType;
-  label: string;
-  key: string;
-  placeholder?: string;
-  required?: boolean;
-  options?: { label: string; value: string }[];
-  defaultValue?: string | number | boolean;
-  validationRules?: ValidationRule[];
-}
-
-export interface ButtonElement extends FormElement {
+  position: number;
   type: "button";
   label: string;
-  actionType: ButtonActionType;
+  actionType: ButtonType;
   targetKeys?: string[]; // Input keys this button will use/affect
-  apiConfig?: APIConfig;
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  serviceId?: number;
+  serviceParams?: any[];
+  responseMapping?: ResponseMapping[];
+  resultType?: "array" | "object";
 }
 
-export interface ValidationRule {
-  type: "required" | "minLength" | "maxLength" | "pattern" | "custom";
-  value?: string | number;
-  message: string;
-  validator?: (value: any) => boolean;
-}
+export type FormInputElementType = {
+  templateId: number;
+  id: number | string;
+  name: string;
+  label: string;
+  type: FieldType;
+  required: boolean;
+  minValue?: number;
+  maxValue?: number;
+  defaultValue?: string | number | boolean | PickerValue | undefined | null;
+  maxLength?: number;
+  columns?: Column[];
+  minDate?: string;
+  maxDate?: string;
+  mask?: string;
+  creationTs: string; // ISO 8601 timestamp
+  description: string | null;
+  legalValues: string[] | null;
+  position: number;
+  serviceIdToLoad?: number;
+  requestParameters: any[];
+};
 
-export interface APIConfig {
-  url: string;
-  method: "GET" | "POST" | "PUT" | "DELETE";
-  headers?: Record<string, string>;
-  body?: Record<string, string>; // Maps request body fields to form input keys
-  responseMapping?: Record<string, string>; // Maps API response keys to form input keys
-  inputParams?: Record<string, string>; // Maps API parameter names to form input keys
-}
+export type FormVariable = FormInputElementType | ButtonElement;
 
 export interface FormConfig {
-  id: string;
+  id?: number;
+  templateId: number | null;
   name: string;
-  elements: (InputElement | ButtonElement)[];
+  description: string;
+  version: string;
+  creationTs: string;
+  formVariables: FormVariable[];
+  status: string;
 }
 
 export type FormValues = Record<string, any>;
 
-export interface InputTypeOption {
-  type: InputType;
+export interface FieldTypeOption {
+  type: FieldType;
   label: string;
-  icon: React.ReactNode;
 }
 
 export interface ButtonTypeOption {
-  actionType: ButtonActionType;
+  actionType: ButtonType;
   label: string;
   icon: React.ReactNode;
 }
 
-export interface FormPreviewProps {
-  config: FormConfig;
+export interface SortableItemProps {
+  id: string | number;
+  element: any;
+  selectedElementId?: string | null;
+  onSelectElement?: (id: string) => void;
+  onRemoveElement?: (id: string) => void;
   formValues: FormValues;
   onValueChange: (key: string, value: any) => void;
-  onSelectElement?: (id: string) => void;
-  selectedElementId?: string | null;
-  onReorderElements?: (elements: (InputElement | ButtonElement)[]) => void;
-  isEditable?: boolean;
-  onRemoveElement?: (id: string) => void;
-  onFormSubmit?: () => void;
+  onButtonClick: (buttonElement: ButtonElement) => Promise<null | undefined>;
 }
 
-export interface SortableItemProps {
-  id: string;
-  element: InputElement | ButtonElement;
-  selectedElementId?: string | null;
-  onSelectElement?: (id: string) => void;
-  onRemoveElement?: (id: string) => void;
-  formValues: FormValues;
-  onValueChange: (key: string, value: any) => void;
-  onButtonClick: () => void;
+export enum FieldTypes {
+  TEXT = "TEXT",
+  NUMBER = "NUMBER",
+  DOUBLE = "DOUBLE",
+  BOOLEAN = "BOOLEAN",
+  IMAGE = "IMAGE",
+  LIST = "LIST",
+  TABLE = "TABLE",
+  DATETIME = "DATETIME",
+}
+
+export type FieldType =
+  | "TEXT"
+  | "NUMBER"
+  | "DOUBLE"
+  | "BOOLEAN"
+  | "IMAGE"
+  | "LIST"
+  | "TABLE"
+  | "DATETIME";
+
+export type ButtonType = "api_call" | "submit" | "reset";
+export type ParamType = "hardcoded" | "input_key";
+
+export interface ServiceParam {
+  key: string;
+  type: ParamType;
+  value: string; // Either hardcoded value or input field name
+}
+
+export interface ResponseMapping {
+  targetInput: string;
+}
+
+export interface Column {
+  name: string;
+  type: string | number | boolean | Dayjs | null | ReactNode;
 }

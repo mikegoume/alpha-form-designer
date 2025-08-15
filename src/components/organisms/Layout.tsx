@@ -1,14 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router";
 
-import ApplicationHeader from "../mollecules/ApplicationHeader";
-import Sidebar from "../mollecules/Sidebar";
+import ApplicationHeader from "../molecules/ApplicationHeader";
+import Sidebar from "../molecules/Sidebar";
 
 const Layout: React.FC = () => {
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="h-screen flex bg-white">
       <Sidebar />
-      <main className="flex-1 bg-white">
+      <main className="flex flex-1 flex-col overflow-hidden">
         <ApplicationHeader />
         <Outlet />
       </main>

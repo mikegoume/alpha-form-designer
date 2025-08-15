@@ -11,13 +11,13 @@ import {
 } from "@mui/material";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 
-import LoginImage from "../assets/login2.png";
+import LoginImage from "../../assets/login2.png";
 import AuthContext from "../contexts/auth/authContext";
 
 const schema = z.object({
-  email: z.email("Invalid email").min(1, "Required"),
+  email: z.email("Invalid email"),
   password: z.string().min(1, "Required"),
 });
 
@@ -35,6 +35,7 @@ function Login() {
     formState: { isValid, errors },
   } = useForm<LoginInputs>({
     resolver: zodResolver(schema),
+    mode: "onSubmit",
   });
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);

@@ -17,7 +17,9 @@ function TabPanel(props: ITabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box>{children}</Box>}
+      {value === index && (
+        <Box className="flex flex-row gap-4 py-4">{children}</Box>
+      )}
     </div>
   );
 }

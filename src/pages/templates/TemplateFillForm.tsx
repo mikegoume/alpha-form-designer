@@ -1,17 +1,13 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router";
 import { renderAsync } from "docx-preview";
 import JSZip from "jszip";
 
 import FormPreview from "../../components/FormBuilder/FormPreview";
-import FilledTemplateHeader from "../../components/mollecules/FilledTemplateHeader";
-import FormsContext from "../../contexts/formsContext";
-import TemplatesContext from "../../contexts/templatesContext";
+import FilledTemplateHeader from "../../components/molecules/FilledTemplateHeader";
 import { FormValues } from "../../types/form";
 
 function TemplateFillForm() {
-  const { templates } = useContext(TemplatesContext);
-  const { forms } = useContext(FormsContext);
   const { id } = useParams();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -19,15 +15,15 @@ function TemplateFillForm() {
 
   const [formValues, setFormValues] = useState<FormValues>({});
 
-  const selectedTemplate = useMemo(() => {
-    return templates.find((template) => template.id === id);
-  }, [id, templates]);
+  // const selectedTemplate = useMemo(() => {
+  //   return templates.find((template) => template.id === id);
+  // }, [id, templates]);
 
-  const selectedForm = useMemo(() => {
-    return forms.find((form) =>
-      selectedTemplate?.associatedFormId.includes(form.id),
-    );
-  }, [forms, selectedTemplate?.associatedFormId]);
+  // const selectedForm = useMemo(() => {
+  //   return forms.find((form) =>
+  //     selectedTemplate?.associatedFormId.includes(form.id),
+  //   );
+  // }, [forms, selectedTemplate?.associatedFormId]);
 
   const handleFormValueChange = (key: string, value: any) => {
     setFormValues((prevValues) => ({
@@ -78,24 +74,24 @@ function TemplateFillForm() {
   };
 
   return (
-    selectedForm && (
-      <div className="">
-        <FilledTemplateHeader showDownloadButton={isSubmitted} />
-        <div
-          className="flex-1 overflow-auto p-6 bg-neutral-50"
-          ref={contentRef}
+    // selectedForm && (
+    <div className="">
+      <FilledTemplateHeader showDownloadButton={isSubmitted} />
+      <div
+        className="flex-1 overflow-auto p-6 bg-neutral-50"
+        ref={contentRef}
+      />
+      {!isSubmitted && (
+        <FormPreview
+          config={selectedForm}
+          formValues={formValues}
+          onValueChange={handleFormValueChange}
+          onFormSubmit={handleSubmit}
         />
-        {!isSubmitted && (
-          <FormPreview
-            config={selectedForm}
-            formValues={formValues}
-            onValueChange={handleFormValueChange}
-            onFormSubmit={handleSubmit}
-          />
-        )}
-      </div>
-    )
+      )}
+    </div>
   );
+  // );
 }
 
 export default TemplateFillForm;

@@ -1,31 +1,22 @@
 import React from "react";
 
 import { buttonTypes, inputTypes } from "../../pages/forms/constants";
-import {
-  createButtonElement,
-  createInputElement,
-} from "../../pages/forms/helpers";
-import {
-  ButtonActionType,
-  ButtonElement,
-  InputElement,
-  InputType,
-} from "../../types/form";
 
 interface ElementsPanelProps {
-  onAddElement: (element: InputElement | ButtonElement) => void;
+  // onAddElement: (element: InputElement | ButtonElement) => void;
+  onAddElement: any;
 }
 
 const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
   // Handle adding an input element
-  const handleAddInput = (type: InputType) => {
-    onAddElement(createInputElement(type));
-  };
+  // const handleAddInput = (type) => {
+  //   onAddElement(createInputElement(type));
+  // };
 
-  // Handle adding a button element
-  const handleAddButton = (actionType: ButtonActionType) => {
-    onAddElement(createButtonElement(actionType));
-  };
+  // // Handle adding a button element
+  // const handleAddButton = (actionType: ButtonActionType) => {
+  //   onAddElement(createButtonElement(actionType));
+  // };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -41,7 +32,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
             <button
               className="flex items-center p-2 border border-gray-200 rounded bg-white hover:bg-gray-50 transition-colors text-left"
               key={input.type}
-              onClick={() => handleAddInput(input.type)}
+              // onClick={() => handleAddInput(input.type)}
             >
               <span className="mr-2 text-gray-500">{input.icon}</span>
               <span className="text-sm">{input.label}</span>
@@ -57,7 +48,7 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
           {buttonTypes.map((button) => (
             <button
               key={button.actionType}
-              onClick={() => handleAddButton(button.actionType)}
+              // onClick={() => handleAddButton(button.actionType)}
               className="flex items-center p-2 border border-gray-200 rounded bg-white hover:bg-gray-50 transition-colors text-left"
             >
               <span className="mr-2 text-gray-500">{button.icon}</span>

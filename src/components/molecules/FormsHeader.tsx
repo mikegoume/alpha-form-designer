@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Box, Tab, Tabs } from "@mui/material";
+import { Box, Button, Tab, Tabs, Typography } from "@mui/material";
 import { Plus } from "lucide-react";
 
 function a11yProps(index: number) {
@@ -21,16 +21,27 @@ function FormsHeader({ value, handleChange }: IFormsHeaderProps) {
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className=" px-8 mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-neutral-800">Forms</h1>
-        <button
+    <div className="bg-white border-b border-gray-200 sticky top-0 z-10 pt-4 flex-col gap-4">
+      <div className="flex flex-row items-center justify-between px-8">
+        <div className=" flex flex-col justify-between">
+          <p className="text-2xl font-semibold tracking-tight leading-8">
+            Templates
+          </p>
+          <Typography
+            className="font-medium tracking-tight"
+            color="text.secondary"
+          >
+            Manage your templates
+          </Typography>
+        </div>
+        <Button
+          variant="contained"
           className="bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
           onClick={handleCreatePress}
         >
           <Plus className="h-4 w-4" />
           Create Form
-        </button>
+        </Button>
       </div>
       <Box sx={{ borderBottom: 1, borderColor: "divider", px: 4 }}>
         <Tabs

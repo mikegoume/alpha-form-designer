@@ -1,88 +1,140 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { v4 as uuidv4 } from "uuid";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
 
+import {
+  createForm,
+  createFormApiArgs,
+  fetchForm,
+  updateForm,
+  updateFormApiArgs,
+} from "../../api/forms";
+import { fetchTemplate } from "../../api/templates";
 import ElementsPanel from "../../components/FormBuilder/ElementsPanel";
 import FormAssociation from "../../components/FormBuilder/FormAssociation";
 import FormPreview from "../../components/FormBuilder/FormPreview";
 import PropertiesPanel from "../../components/FormBuilder/PropertiesPanel";
-import FormBuilderHeader from "../../components/mollecules/FormBuilderHeader";
-import FormsContext from "../../contexts/formsContext";
-import TemplatesContext from "../../contexts/templatesContext";
+import FormBuilderHeader from "../../components/molecules/FormBuilderHeader";
+import { FormConfig, FormValues, FormVariable } from "../../types/form";
+import { Placeholder } from "../../types/templates";
 import {
-  ButtonElement,
-  FormConfig,
-  FormValues,
-  InputElement,
-} from "../../types/form";
-
-// Initial empty form configuration
-export const initialFormConfig: FormConfig = {
-  id: uuidv4(),
-  name: "New Form",
-  elements: [],
-};
+  createInputElement,
+  transformTemplateFields,
+} from "../../utils/formUtils";
+import { initialFormConfig } from "./constants";
 
 const FormBuilder: React.FC = () => {
-  const { templates, onSaveTemplate } = useContext(TemplatesContext);
-  const { forms, onSaveForm } = useContext(FormsContext);
   const navigate = useNavigate();
 
+  const { formId: id } = useParams();
+
+  console.log(id === "create");
+
+  const saveFormMutation = useMutation({
+    mutationKey: [id],
+    mutationFn: (payload: createFormApiArgs) => createForm(payload),
+    onSuccess: () => {
+      navigate("/forms");
+    },
+  });
+
+  const updateFormMutation = useMutation({
+    mutationKey: [id],
+    mutationFn: (payload: updateFormApiArgs) => updateForm(payload),
+    onSuccess: () => {
+      navigate("/forms");
+    },
+  });
+
   const [formConfig, setFormConfig] = useState<FormConfig>(initialFormConfig);
-  const [associatedTemplateId, setAssociatedTemplateId] = useState<
-    string | null
-  >(null);
+  const [associatedTemplateId, setAssociatedTemplateId] = useState("");
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
   const [previewMode, setPreviewMode] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({});
 
-  const { id } = useParams();
+  console.log("formConfig: ", formConfig);
+  // console.log("formValues: ", formValues);
 
-  useEffect(() => {
-    if (id) {
-      const form = forms.find((form) => form.id === id);
+  const { data: formData, isLoading: isFormsLoading } = useQuery({
+    queryKey: ["form", id],
+    queryFn: () => fetchForm(Number(id)),
+    enabled: !!id && id !== "create",
+  });
 
-      if (form) {
-        setFormConfig(form);
-      }
-    }
-  }, [id, forms]);
+  const { data: template } = useQuery({
+    queryKey: ["template", associatedTemplateId],
+    queryFn: () => fetchTemplate(associatedTemplateId),
+    enabled: !!associatedTemplateId, // Only run when templateId exists
+  });
+
+  const form = formData?.data;
+  let extractedVariables = transformTemplateFields(
+    template?.data.placeholders ?? [],
+  );
 
   // Find the selected element from the form config
-  const selectedElement = formConfig.elements.find(
-    (el) => el.id === selectedElementId,
+  const selectedElement = formConfig.formVariables.find(
+    (formVariable) => formVariable.id === selectedElementId,
   );
 
   // Handle adding a new element to the form
-  const handleAddElement = (element: InputElement | ButtonElement) => {
-    const newOrder =
-      formConfig.elements.length > 0
-        ? Math.max(...formConfig.elements.map((el) => el.order)) + 1
-        : 0;
-
-    const newElement = {
-      ...element,
-      id: uuidv4(),
-      order: newOrder,
-    };
-
+  const handleAddElement = useCallback((element: any) => {
     setFormConfig((prevformconfig) => ({
       ...prevformconfig,
-      elements: [...prevformconfig.elements, newElement],
+      formVariables: [
+        ...prevformconfig.formVariables,
+        { ...element, position: prevformconfig.formVariables.length + 1 },
+      ],
     }));
 
-    setSelectedElementId(newElement.id);
-  };
+    setSelectedElementId(element.id);
+  }, []);
+
+  useEffect(() => {
+    if (form && formConfig.templateId === null) {
+      const { json, ...rest } = form;
+      const formVariables = JSON.parse(json).formVariables;
+
+      setFormConfig({
+        ...rest,
+        formVariables,
+      });
+
+      setAssociatedTemplateId(String(form.templateId));
+    }
+  }, [form, formConfig.templateId]);
+
+  useEffect(() => {
+    if (associatedTemplateId !== "") {
+      console.log(associatedTemplateId);
+      setFormConfig((prevFormConfig) => ({
+        ...prevFormConfig,
+        templateId: Number(associatedTemplateId),
+      }));
+    }
+  }, [associatedTemplateId]);
+
+  useEffect(() => {
+    if (
+      extractedVariables &&
+      extractedVariables.length > 0 &&
+      formConfig.formVariables.length < extractedVariables.length
+    ) {
+      setFormConfig((prevConfig) => ({ ...prevConfig, formVariables: [] }));
+      extractedVariables.map((placeholder: Placeholder, index: number) => {
+        handleAddElement(createInputElement(placeholder, index));
+      });
+    }
+  }, [extractedVariables, formConfig.formVariables.length, handleAddElement]);
 
   // Handle updating an existing element
-  const handleUpdateElement = (
-    updatedElement: InputElement | ButtonElement,
-  ) => {
+  const handleUpdateElement = (updatedElement: any) => {
     setFormConfig({
       ...formConfig,
-      elements: formConfig.elements.map((el) =>
+      formVariables: formConfig.formVariables.map((el) =>
         el.id === updatedElement.id ? updatedElement : el,
       ),
     });
@@ -90,10 +142,16 @@ const FormBuilder: React.FC = () => {
 
   // Handle removing an element
   const handleRemoveElement = (elementId: string) => {
-    setFormConfig({
-      ...formConfig,
-      elements: formConfig.elements.filter((el) => el.id !== elementId),
-    });
+    extractedVariables = extractedVariables.filter(
+      (ev) => String(ev.id) !== elementId,
+    );
+
+    setFormConfig((prevConfig) => ({
+      ...prevConfig,
+      formVariables: prevConfig.formVariables.filter(
+        (el) => el.id !== elementId,
+      ),
+    }));
 
     if (selectedElementId === elementId) {
       setSelectedElementId(null);
@@ -108,34 +166,41 @@ const FormBuilder: React.FC = () => {
     }));
   };
 
-  // Handle reordering elements
-  const handleReorderElements = (
-    elements: (InputElement | ButtonElement)[],
-  ) => {
+  // Handle reordering formVariables
+  const handleReorderFormVariables = (formVariables: any) => {
     setFormConfig({
       ...formConfig,
-      elements,
+      formVariables,
     });
   };
 
   // Save the form configuration to JSON
   const handleSaveConfig = () => {
-    onSaveForm(formConfig);
-    const associatedTemplate = templates.find(
-      (template) => template.id === associatedTemplateId,
-    );
+    if (id === "create" && formConfig.templateId !== null) {
+      const saveFormPayload = {
+        templateId: formConfig.templateId,
+        name: formConfig.name,
+        description: formConfig.description,
+        version: formConfig.version,
+        json: JSON.stringify(formConfig),
+        status: formConfig.status,
+      };
 
-    if (associatedTemplate) {
-      onSaveTemplate({
-        ...associatedTemplate,
-        associatedFormId: [
-          ...associatedTemplate.associatedFormId,
-          formConfig.id,
-        ],
-      });
+      console.log("first");
+      saveFormMutation.mutate(saveFormPayload);
+    } else {
+      const saveFormPayload = {
+        id: Number(id),
+        templateId: formConfig.templateId,
+        name: formConfig.name,
+        description: formConfig.description,
+        version: formConfig.version,
+        json: JSON.stringify(formConfig),
+        status: formConfig.status,
+      };
+
+      updateFormMutation.mutate(saveFormPayload);
     }
-
-    navigate("/forms");
   };
 
   // Toggle preview mode
@@ -148,8 +213,12 @@ const FormBuilder: React.FC = () => {
     setFormConfig(initialFormConfig);
   };
 
+  if (isFormsLoading) {
+    return <p>Loading...</p>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       <FormBuilderHeader
         formConfig={formConfig}
         setFormConfig={setFormConfig}
@@ -157,42 +226,41 @@ const FormBuilder: React.FC = () => {
         previewMode={previewMode}
         togglePreviewMode={togglePreviewMode}
       />
-      <main className="container mx-auto px-4 py-6">
+      <main className="flex flex-col flex-1 overflow-y-auto bg-neutral-100 p-4">
         {previewMode ? (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl w-full mx-auto">
             <FormPreview
-              config={formConfig}
+              formConfig={formConfig}
               formValues={formValues}
               onValueChange={handleFormValueChange}
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Left Panel - Elements */}
-            <div className="lg:col-span-3 flex flex-col gap-6">
+            <div className="lg:col-span-1 flex flex-col gap-6">
               <FormAssociation
                 associatedTemplateId={associatedTemplateId}
                 setAssociatedTemplateId={setAssociatedTemplateId}
-                onAddElement={handleAddElement}
                 onResetConfig={handleResetConfig}
               />
               <ElementsPanel onAddElement={handleAddElement} />
             </div>
 
             {/* Middle Panel - Preview */}
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-4">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
                   <h2 className="font-medium text-gray-700">Form Preview</h2>
                 </div>
                 <div className="p-4">
                   <FormPreview
-                    config={formConfig}
+                    formConfig={formConfig}
                     formValues={formValues}
                     onValueChange={handleFormValueChange}
                     onSelectElement={setSelectedElementId}
                     selectedElementId={selectedElementId}
-                    onReorderElements={handleReorderElements}
+                    onReorderFormVariables={handleReorderFormVariables}
                     isEditable={true}
                     onRemoveElement={handleRemoveElement}
                   />
@@ -201,18 +269,60 @@ const FormBuilder: React.FC = () => {
             </div>
 
             {/* Right Panel - Properties */}
-            <div className="lg:col-span-4">
+            {/* <div className="lg:col-span-3">
               <PropertiesPanel
-                element={selectedElement}
+                formConfig={formConfig}
+                element={selectedElement as FormVariable}
                 onUpdateElement={handleUpdateElement}
                 onRemoveElement={handleRemoveElement}
-                formElements={formConfig.elements}
               />
-            </div>
+            </div> */}
+            <AnimatePresence>
+              {selectedElementId && (
+                <>
+                  {/* Overlay */}
+                  <motion.div
+                    className="fixed inset-0 bg-black bg-opacity-30 z-[100]"
+                    onClick={() => setSelectedElementId(null)}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+
+                  {/* Close Button */}
+                  <motion.button
+                    onClick={() => setSelectedElementId(null)}
+                    className="fixed top-4 right-[calc(100vw-100%+460px)] z-[600] bg-white rounded-full size-8 flex items-center justify-center shadow"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    ✕
+                  </motion.button>
+
+                  {/* Sliding Panel */}
+                  <motion.div
+                    className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-lg z-[500] border-l border-gray-200"
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "100%" }}
+                    transition={{ type: "tween", duration: 0.3 }}
+                  >
+                    <PropertiesPanel
+                      formConfig={formConfig}
+                      element={selectedElement as FormVariable}
+                      onUpdateElement={handleUpdateElement}
+                      // onRemoveElement={handleRemoveElement}
+                    />
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 };
 
