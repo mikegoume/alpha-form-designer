@@ -1,9 +1,3 @@
-export interface Placeholder {
-  id: string;
-  name: string;
-  defaultValue?: string;
-}
-
 export interface FormField {
   id: string;
   type: "text" | "number" | "select" | "checkbox" | "date";

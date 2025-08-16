@@ -1,155 +1,155 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { Button } from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DownloadIcon, Edit, FormInput } from "lucide-react";
+
+import {
+  fetchTemplate,
+  updateTemplate,
+  updateTemplateApiArgs,
+} from "../../api/templates";
+import DocumentPreview from "../../components/molecules/DocumentPreview";
+import MetadataManager, {
+  MetadataForm,
+} from "../../components/molecules/MetadataManager";
+import PlaceholderManager from "../../components/molecules/PlaceholderManager";
+import TemplatesBuilderHeader from "../../components/molecules/TemplatesBuilderHeader";
+
 function TemplateManagement() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const client = useQueryClient();
 
-  // const { templates, uploadedDocument, onSaveTemplate } =
-  //   useContext(TemplatesContext);
-  // const { userType } = useAuth().user;
+  const [documentMetadata, setDocumentMetadata] = useState<
+    MetadataForm | undefined
+  >(undefined);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // const isAdmin = useMemo(() => {
-  //   return userType === "admin";
-  // }, [userType]);
+  const { data: templateData, isLoading } = useQuery({
+    queryKey: ["template", id],
+    queryFn: () => fetchTemplate(id as string),
+    enabled: !!id,
+  });
 
-  // const [document, setDocument] = useState<DocumentData | null>(null);
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+  const updateTemplateMutation = useMutation({
+    mutationKey: ["update-template", id],
+    mutationFn: (dataToUpdate: updateTemplateApiArgs) =>
+      updateTemplate(dataToUpdate),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: [id, "templates"] });
+      setIsEditing(false);
+    },
+  });
 
-  // const { id } = useParams();
+  const template = templateData?.data;
 
-  // useEffect(() => {
-  //   if (uploadedDocument) {
-  //     setDocument(uploadedDocument);
-  //   } else if (id) {
-  //     const template = templates.find((template) => template.id === id);
-  //     if (template) {
-  //       setDocument(template);
-  //     }
-  //   }
-  // }, [id, templates, uploadedDocument]);
+  useEffect(() => {
+    if (template && !documentMetadata) {
+      setDocumentMetadata(() => ({
+        fileName: template?.name ?? "",
+        description: template?.description ?? "",
+        tags: [],
+      }));
+    }
+  }, [documentMetadata, template]);
 
-  // const handleEditorSave = (newContent: string) => {
-  //   if (!document) return;
+  const onMetadataUpdate = (metadata: MetadataForm) => {
+    console.log(metadata);
+    setDocumentMetadata(metadata);
+  };
 
-  //   const extractedPlaceholders = extractPlaceholders(newContent);
+  const handleEditorSave = () => {
+    const dataToUpdate = {
+      id: parseInt(id as string, 10),
+      name: documentMetadata?.fileName ?? "",
+      description: documentMetadata?.description ?? "",
+      version: template?.version ?? "",
+      filename: template?.filename ?? "",
+      data: template?.data ?? "",
+      creationTs: template?.creationTs ?? "",
+    };
 
-  //   setDocument({
-  //     ...document,
-  //     content: newContent,
-  //     placeholders: extractedPlaceholders,
-  //   });
+    updateTemplateMutation.mutate(dataToUpdate);
+  };
 
-  //   setIsEditing(false);
-  // };
+  const isUploading = useMemo(() => template?.name === undefined, [template]);
 
-  // const onMetadataUpdate = (metadata: MetadataForm) => {
-  //   setIsLoading(true);
-  //   setDocument((prevDoc) =>
-  //     prevDoc
-  //       ? {
-  //           ...prevDoc,
-  //           metadata,
-  //         }
-  //       : null,
-  //   );
-  //   setTimeout(() => setIsLoading(false), 2000);
-  // };
+  console.log(documentMetadata);
 
-  // const isUploading = useMemo(() => !!uploadedDocument, [uploadedDocument]);
-
-  // const showUpdateMetadataButton = useMemo(() => {
-  //   return !!uploadedDocument || isEditing;
-  // }, [isEditing, uploadedDocument]);
-
-  // if (!document || !document.id) {
-  //   return;
-  // }
-
-  // function handleSaveDcument() {
-  //   onSaveTemplate({ ...document });
-
-  //   navigate("/templates");
-  // }
-
-  // const renderActionButtons = () => {
-  //   if (isEditing) {
-  //     return (
-  //       <Button
-  //         variant="contained"
-  //         className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
-  //         onClick={() => handleEditorSave(document.content)}
-  //       >
-  //         Save
-  //       </Button>
-  //     );
-  //   } else {
-  //     return isUploading ? (
-  //       <Button
-  //         variant="contained"
-  //         className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
-  //         onClick={handleSaveDcument}
-  //         disabled={isLoading}
-  //       >
-  //         <DownloadIcon className="h-4 w-4" />
-  //         Save
-  //       </Button>
-  //     ) : (
-  //       <div className="flex flex-row gap-6">
-  //         <Button
-  //           variant="contained"
-  //           className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
-  //           onClick={() => navigate("fill")}
-  //         >
-  //           <FormInput className="h-4 w-4" />
-  //           Fill
-  //         </Button>
-  //         {isAdmin && (
-  //           <Button
-  //             variant="contained"
-  //             className="bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
-  //             onClick={() => setIsEditing(true)}
-  //           >
-  //             <Edit className="h-4 w-4" />
-  //             Edit
-  //           </Button>
-  //         )}
-  //       </div>
-  //     );
-  //   }
-  // };
+  const renderActionButtons = () => {
+    if (isEditing) {
+      return (
+        <Button
+          variant="contained"
+          className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
+          onClick={handleEditorSave}
+          disabled={
+            documentMetadata?.fileName === "" ||
+            documentMetadata?.description === ""
+          }
+        >
+          Save
+        </Button>
+      );
+    } else {
+      return isUploading ? (
+        <Button
+          variant="contained"
+          className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
+          // onClick={handleSaveDcument}
+          disabled={isLoading}
+        >
+          <DownloadIcon className="h-4 w-4" />
+          Save
+        </Button>
+      ) : (
+        <div className="flex flex-row gap-6">
+          <Button
+            variant="contained"
+            className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
+            onClick={() => navigate("fill")}
+          >
+            <FormInput className="h-4 w-4" />
+            Fill
+          </Button>
+          <Button
+            variant="contained"
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
+            onClick={() => setIsEditing(true)}
+          >
+            <Edit className="h-4 w-4" />
+            Edit
+          </Button>
+        </div>
+      );
+    }
+  };
 
   return (
-    <div />
-    // document && (
-    //   <div className="flex-1 flex flex-col bg-neutral-100">
-    //     <TemplatesBuilderHeader
-    //       title={isEditing ? "Edit Template" : "Template Preview"}
-    //       actionButtons={renderActionButtons()}
-    //     />
-    //     <main className="flex flex-col flex-1 container mx-auto py-8 px-4">
-    //       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    //         <div className="space-y-6 col-span-2">
-    //           {isEditing ? (
-    //             <DocumentEditor
-    //               content={document?.content}
-    //               setContent={(content: string) =>
-    //                 setDocument({ ...document, content })
-    //               }
-    //             />
-    //           ) : (
-    //             <DocumentPreview document={document} />
-    //           )}
-    //         </div>
-    //         <div className="space-y-6">
-    //           <PlaceholderManager placeholders={document.placeholders} />
-    //           <MetadataManager
-    //             metadata={document.metadata}
-    //             showUpdateMetadataButton={showUpdateMetadataButton}
-    //             onSubmit={onMetadataUpdate}
-    //           />
-    //         </div>
-    //       </div>
-    //     </main>
-    //   </div>
-    // )
+    template && (
+      <div className="flex-1 flex flex-col bg-neutral-100">
+        <TemplatesBuilderHeader
+          title={isEditing ? "Edit Template" : "Template Preview"}
+          actionButtons={renderActionButtons()}
+        />
+        <main className="flex flex-col flex-1 py-8 px-4 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+            <div className="space-y-6 col-span-2">
+              <DocumentPreview document={template} />
+            </div>
+            <div className="space-y-6">
+              <PlaceholderManager placeholders={template.placeholders} />
+              <MetadataManager
+                metadata={documentMetadata}
+                showUpdateMetadataButton={isEditing}
+                onSubmit={onMetadataUpdate}
+              />
+            </div>
+          </div>
+        </main>
+      </div>
+    )
   );
 }
 

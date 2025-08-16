@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Tag } from "lucide-react";
 
-import { Placeholder } from "../../types/doc";
+import { Placeholder } from "../../types/templates";
 
 interface PlaceholderManagerProps {
   placeholders: Placeholder[];

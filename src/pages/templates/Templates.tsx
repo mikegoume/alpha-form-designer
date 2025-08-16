@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import { Link } from "react-router";
-import { Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchTemplates } from "../../api/templates";
 import FileItem from "../../components/atoms/FileItem";
+import FilterComponent from "../../components/molecules/LayoutFilters";
+import TemplatesHeader from "../../components/molecules/TemplatesHeader";
 import { useAuth } from "../../hooks/useAuth";
-import { DocumentData } from "../../types/doc";
+import { Template } from "../../types/templates";
 import TemplateUpload from "./TemplateUpload";
 
 function Templates() {
@@ -27,10 +28,10 @@ function Templates() {
     return <p>Loading</p>;
   }
 
-  const renderTemplates = (templatesList: DocumentData[]) => {
-    return templatesList.map((template: DocumentData) => (
+  const renderTemplates = (templatesList: Template[]) => {
+    return templatesList.map((template) => (
       <Link
-        to={template.id}
+        to={`${template.id}`}
         key={template.id}
         className="flex flex-col relative w-full sm:w-40 h-40"
       >
@@ -41,26 +42,13 @@ function Templates() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* <TemplatesHeader value={tabValue} handleChange={handleTabChange} /> */}
+      <TemplatesHeader />
       {isAdmin && <TemplateUpload />}
-      <div className="flex flex-col gap-6">
-        {templates.length > 0 && (
-          <div className="mx-8">
-            <Typography variant="button">Recent Templates</Typography>
-            <div className="flex flex-row mt-4">
-              {renderTemplates(templates)}
-            </div>
-          </div>
-        )}
-        {/* <div className="mx-8">
-          <Typography variant="button">{"All Templates"}</Typography>
-          <TabPanel value={tabValue} index={0}>
-            {renderTemplates(templates)}
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            {renderTemplates(templates)}
-          </TabPanel>
-        </div> */}
+      <div className="flex flex-col gap-8">
+        <div className="mx-8">
+          <FilterComponent />
+          <div className="flex flex-row mt-8">{renderTemplates(templates)}</div>
+        </div>
       </div>
     </div>
   );

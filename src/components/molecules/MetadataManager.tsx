@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { motion } from "framer-motion";
 
 export type MetadataForm = {
@@ -10,7 +10,7 @@ export type MetadataForm = {
 };
 
 interface IMetaDataProps {
-  metadata: MetadataForm;
+  metadata?: MetadataForm;
   showUpdateMetadataButton: boolean;
   onSubmit: (metadata: MetadataForm) => void;
 }
@@ -25,9 +25,13 @@ function MetadataManager({
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<MetadataForm>({
     defaultValues: metadata,
   });
+
+  const fileName = watch("fileName");
+  const description = watch("description");
 
   useEffect(() => {
     reset(metadata);
@@ -43,66 +47,60 @@ function MetadataManager({
       <h2 className="text-lg font-medium text-neutral-800 mb-4">
         Document Metadata
       </h2>
-      {!showUpdateMetadataButton ? (
-        <div className="flex flex-col gap-2">
-          {Object.keys(metadata).map((key) => (
-            <div key={key}>
-              <p>{key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()}:</p>
-              <p>{metadata[key as keyof MetadataForm]}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="gap-2 flex flex-col">
-          <Controller
-            name="fileName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="File Name"
-                variant="outlined"
-                fullWidth
-                error={errors.fileName ? true : false}
-                helperText={errors.fileName?.message}
-              />
-            )}
-          />
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Description"
-                variant="outlined"
-                fullWidth
-                multiline
-                error={errors.description ? true : false}
-                helperText={errors.description?.message}
-              />
-            )}
-          />
-          <Controller
-            name="tags"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Tags"
-                variant="outlined"
-                fullWidth
-                error={errors.tags ? true : false}
-                helperText={errors.tags?.message}
-              />
-            )}
-          />
-
-          <button className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors">
+      <form onSubmit={handleSubmit(onSubmit)} className="gap-2 flex flex-col">
+        <Controller
+          name="fileName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="File Name"
+              variant="outlined"
+              fullWidth
+              error={errors.fileName ? true : false}
+              helperText={errors.fileName?.message}
+            />
+          )}
+        />
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Description"
+              variant="outlined"
+              fullWidth
+              multiline
+              error={errors.description ? true : false}
+              helperText={errors.description?.message}
+            />
+          )}
+        />
+        <Controller
+          name="tags"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Tags"
+              variant="outlined"
+              fullWidth
+              error={errors.tags ? true : false}
+              helperText={errors.tags?.message}
+            />
+          )}
+        />
+        {showUpdateMetadataButton && (
+          <Button
+            variant="contained"
+            disabled={!fileName || !description}
+            type="submit"
+          >
             Update
-          </button>
-        </form>
-      )}
+          </Button>
+        )}
+      </form>
     </motion.div>
   );
 }

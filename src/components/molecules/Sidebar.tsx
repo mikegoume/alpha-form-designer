@@ -4,10 +4,12 @@ import { FileInput, FileText, Layout as LayoutIcon } from "lucide-react";
 function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r border-neutral-200">
-      <div className="p-4 border-b border-neutral-200">
+      <div className="p-4 ">
         <div className="flex items-center gap-2">
           <FileText className="text-primary-500 h-6 w-6" />
-          <h1 className="text-xl font-semibold text-neutral-800">DocForm</h1>
+          <h1 className="text-xl font-semibold text-neutral-800">
+            Forms Designer
+          </h1>
         </div>
       </div>
 
