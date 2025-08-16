@@ -47,7 +47,9 @@ function Templates() {
       <div className="flex flex-col gap-8">
         <div className="mx-8">
           <FilterComponent />
-          <div className="flex flex-row mt-8">{renderTemplates(templates)}</div>
+          <div className="grid grid-cols-10 gap-2">
+            {renderTemplates(templates)}
+          </div>
         </div>
       </div>
     </div>

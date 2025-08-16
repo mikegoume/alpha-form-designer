@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 
 import { fetchEndpoints } from "../../api/endpoints";
 import FileItem from "../../components/atoms/FileItem";
+import FilterComponent from "../../components/molecules/LayoutFilters";
+import ServicesHeader from "../../components/molecules/ServicesHeader";
 import { Endpoint } from "../../types/endpoints";
 
 function Services() {
@@ -55,9 +57,9 @@ function Services() {
   return (
     <div className="flex h-full relative">
       <div className="flex flex-1 flex-col">
-        {/* <ServicesHeader /> */}
+        <ServicesHeader />
         <div className="flex flex-1 flex-col gap-8 bg-gray-50 p-8 overflow-auto">
-          {/* <HeaderFilters /> */}
+          <FilterComponent />
           <div className="flex flex-col overflow-y-auto">
             <div className="grid grid-cols-10 gap-2">
               {renderTemplates(templates)}
@@ -96,7 +98,7 @@ function Services() {
               {/* Sidebar Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-800">
-                  Template Details
+                  Service Details
                 </h2>
                 <button
                   onClick={handleCloseSidebar}
