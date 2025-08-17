@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-import { APIConfig, ButtonElement, InputElement } from "../../types/form";
+import { ButtonElement } from "../../types/form";
 
 interface PropertiesPanelProps {
   element: InputElement | ButtonElement | undefined;

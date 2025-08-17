@@ -19,7 +19,7 @@ function Templates() {
 
   const { data: templatesData, isLoading } = useQuery({
     queryKey: ["templates"],
-    queryFn: () => fetchTemplates(),
+    queryFn: fetchTemplates,
   });
 
   const templates = templatesData?.data;

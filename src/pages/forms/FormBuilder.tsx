@@ -14,9 +14,8 @@ import { fetchTemplate } from "../../api/templates";
 import ElementsPanel from "../../components/FormBuilder/ElementsPanel";
 import FormAssociation from "../../components/FormBuilder/FormAssociation";
 import FormPreview from "../../components/FormBuilder/FormPreview";
-import PropertiesPanel from "../../components/FormBuilder/PropertiesPanel";
 import FormBuilderHeader from "../../components/molecules/FormBuilderHeader";
-import { FormConfig, FormValues, FormVariable } from "../../types/form";
+import { FormConfig, FormValues } from "../../types/form";
 import { Placeholder } from "../../types/templates";
 import {
   createInputElement,
@@ -28,8 +27,6 @@ const FormBuilder: React.FC = () => {
   const navigate = useNavigate();
 
   const { formId: id } = useParams();
-
-  console.log(id === "create");
 
   const saveFormMutation = useMutation({
     mutationKey: [id],
@@ -55,7 +52,7 @@ const FormBuilder: React.FC = () => {
   const [previewMode, setPreviewMode] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({});
 
-  console.log("formConfig: ", formConfig);
+  // console.log("formConfig: ", formConfig);
   // console.log("formValues: ", formValues);
 
   const { data: formData, isLoading: isFormsLoading } = useQuery({
@@ -109,7 +106,6 @@ const FormBuilder: React.FC = () => {
 
   useEffect(() => {
     if (associatedTemplateId !== "") {
-      console.log(associatedTemplateId);
       setFormConfig((prevFormConfig) => ({
         ...prevFormConfig,
         templateId: Number(associatedTemplateId),
@@ -186,7 +182,6 @@ const FormBuilder: React.FC = () => {
         status: formConfig.status,
       };
 
-      console.log("first");
       saveFormMutation.mutate(saveFormPayload);
     } else {
       const saveFormPayload = {
@@ -236,9 +231,8 @@ const FormBuilder: React.FC = () => {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Left Panel - Elements */}
-            <div className="lg:col-span-1 flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
               <FormAssociation
                 associatedTemplateId={associatedTemplateId}
                 setAssociatedTemplateId={setAssociatedTemplateId}
@@ -247,7 +241,6 @@ const FormBuilder: React.FC = () => {
               <ElementsPanel onAddElement={handleAddElement} />
             </div>
 
-            {/* Middle Panel - Preview */}
             <div className="lg:col-span-4">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
@@ -309,12 +302,12 @@ const FormBuilder: React.FC = () => {
                     exit={{ x: "100%" }}
                     transition={{ type: "tween", duration: 0.3 }}
                   >
-                    <PropertiesPanel
+                    {/* <PropertiesPanel
                       formConfig={formConfig}
                       element={selectedElement as FormVariable}
                       onUpdateElement={handleUpdateElement}
                       // onRemoveElement={handleRemoveElement}
-                    />
+                    /> */}
                   </motion.div>
                 </>
               )}

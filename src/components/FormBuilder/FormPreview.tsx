@@ -13,11 +13,12 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Grip, X } from "lucide-react";
+import { Grip } from "lucide-react";
 
 import {
   ButtonElement,
-  FormPreviewProps,
+  FormConfig,
+  FormValues,
   SortableItemProps,
 } from "../../types/form";
 import FormRenderer from "./FormRenderer";
@@ -27,7 +28,6 @@ const SortableItem: React.FC<SortableItemProps> = ({
   element,
   selectedElementId,
   onSelectElement,
-  onRemoveElement,
   formValues,
   onValueChange,
   onButtonClick,
@@ -67,24 +67,12 @@ const SortableItem: React.FC<SortableItemProps> = ({
         >
           <Grip size={16} />
         </div>
-
         <div className="text-xs font-medium text-gray-500">
           {"type" in element
             ? element.type.charAt(0).toUpperCase() + element.type.slice(1)
             : "Button"}
         </div>
-
-        {onRemoveElement && (
-          <button
-            className="p-1.5 hover:bg-gray-100 rounded text-gray-400 hover:text-red-500"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveElement(element.id);
-            }}
-          >
-            <X size={16} />
-          </button>
-        )}
+        <div />
       </div>
 
       <div className="p-3">
@@ -103,8 +91,20 @@ const SortableItem: React.FC<SortableItemProps> = ({
   );
 };
 
+interface FormPreviewProps {
+  formConfig: FormConfig;
+  formValues: FormValues;
+  onValueChange: (key: string, value: any) => void;
+  onSelectElement?: React.Dispatch<React.SetStateAction<string | null>>;
+  selectedElementId?: string | null;
+  onReorderElements?: (formVariables: any) => void;
+  isEditable?: boolean;
+  onRemoveElement?: (elementId: string) => void;
+  onFormSubmit?: () => void;
+}
+
 const FormPreview: React.FC<FormPreviewProps> = ({
-  config,
+  formConfig,
   formValues,
   onValueChange,
   onSelectElement,
@@ -178,7 +178,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
       case "reset":
         // Reset form to default values
-        config.elements.forEach((element) => {
+        formConfig.formVariables.forEach((element) => {
           if ("key" in element && element.defaultValue !== undefined) {
             onValueChange(element.key, element.defaultValue);
           }
@@ -187,7 +187,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
       case "clear":
         // Clear all form values
-        config.elements.forEach((element) => {
+        formConfig.formVariables.forEach((element) => {
           if ("key" in element) {
             onValueChange(element.key, "");
           }
@@ -198,7 +198,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         // Handle form submission (just log values for demo)
         // console.log('Form submitted with values:', formValues);
         if (onFormSubmit) {
-          console.log("submit");
           onFormSubmit();
         }
         // alert(
@@ -214,10 +213,14 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
     if (!over || active.id === over.id || !onReorderElements) return;
 
-    const oldIndex = config.elements.findIndex((el) => el.id === active.id);
-    const newIndex = config.elements.findIndex((el) => el.id === over.id);
+    const oldIndex = formConfig.formVariables.findIndex(
+      (el) => el.id === active.id,
+    );
+    const newIndex = formConfig.formVariables.findIndex(
+      (el) => el.id === over.id,
+    );
 
-    const items = Array.from(config.elements);
+    const items = Array.from(formConfig.formVariables);
     const [reorderedItem] = items.splice(oldIndex, 1);
     items.splice(newIndex, 0, reorderedItem);
 
@@ -233,40 +236,36 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   if (isEditable) {
     return (
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div className="space-y-4">
-          {config.elements.length === 0 && (
-            <div className="p-8 border-2 border-dashed border-gray-200 rounded-lg text-center">
-              <p className="text-gray-500">
-                Add form elements from the left panel
-              </p>
-            </div>
-          )}
-
-          <SortableContext
-            items={config.elements.map((el) => el.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {config.elements
-              .sort((a, b) => a.order - b.order)
-              .map((element) => (
-                <SortableItem
-                  key={element.id}
-                  id={element.id}
-                  element={element}
-                  selectedElementId={selectedElementId}
-                  onSelectElement={onSelectElement}
-                  onRemoveElement={onRemoveElement}
-                  formValues={formValues}
-                  onValueChange={onValueChange}
-                  onButtonClick={() => {
-                    if ("actionType" in element) {
-                      handleButtonClick(element);
-                    }
-                  }}
-                />
-              ))}
-          </SortableContext>
-        </div>
+        {formConfig.formVariables.length === 0 ? (
+          <div className="p-8 border-2 border-dashed border-gray-200 rounded-lg text-center">
+            <p className="text-gray-500">
+              Add form formVariables from the left panel{" "}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 overflow-y-auto max-h-[900px]">
+            <SortableContext
+              items={formConfig.formVariables.map((el) => el.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {formConfig?.formVariables
+                .sort((a, b) => a.position - b.position)
+                .map((element) => (
+                  <SortableItem
+                    key={element.id}
+                    id={element.id}
+                    element={element}
+                    selectedElementId={selectedElementId}
+                    onSelectElement={onSelectElement}
+                    onRemoveElement={onRemoveElement}
+                    formValues={formValues}
+                    onValueChange={onValueChange}
+                    onButtonClick={handleButtonClick}
+                  />
+                ))}
+            </SortableContext>
+          </div>
+        )}
       </DndContext>
     );
   }
@@ -274,10 +273,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   // Non-editable preview mode
   return (
     <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h2 className="text-xl font-semibold mb-6">{config.name}</h2>
+      <h2 className="text-xl font-semibold mb-6">{formConfig.name}</h2>
 
-      {config.elements
-        .sort((a, b) => a.order - b.order)
+      {formConfig.formVariables
+        .sort((a, b) => a.position - b.position)
         .map((element) => (
           <div key={element.id} className="mb-4">
             <FormRenderer

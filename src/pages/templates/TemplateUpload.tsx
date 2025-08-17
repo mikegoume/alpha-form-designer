@@ -35,8 +35,6 @@ function TemplateUpload() {
         data: filedata,
       };
 
-      console.log(templateToUploadData);
-
       uploadTemplateMutation.mutate(templateToUploadData);
     } catch (error) {
       console.error("Error processing document:", error);

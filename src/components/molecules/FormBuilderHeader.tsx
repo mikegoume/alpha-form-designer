@@ -18,7 +18,7 @@ function FormBuilderHeader({
   togglePreviewMode,
 }: IFormBuilderHeaderProps) {
   const isSaveDisabled =
-    formConfig.elements.filter(
+    formConfig.formVariables.filter(
       (element) => (element as ButtonElement).actionType === "submit",
     ).length === 0;
 

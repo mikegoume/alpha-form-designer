@@ -1,40 +1,48 @@
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { useQuery } from "@tanstack/react-query";
 
-import { ButtonElement } from "../../types/form";
+import { fetchTemplates } from "../../api/templates";
 
 interface FormAssociationProps {
   associatedTemplateId: string | null;
-  setAssociatedTemplateId: (templateId: string | null) => void;
-  onAddElement: (element: ButtonElement) => void;
+  setAssociatedTemplateId: React.Dispatch<React.SetStateAction<string>>;
   onResetConfig: () => void;
 }
 
 function FormAssociation({
   associatedTemplateId,
   setAssociatedTemplateId,
-  onAddElement,
   onResetConfig,
 }: FormAssociationProps) {
-  const templates = [];
+  const { data: templatesData } = useQuery({
+    queryKey: ["templates"],
+    queryFn: fetchTemplates,
+  });
+
+  const templates = templatesData?.data;
+
+  if (!templates) {
+    return <p>Loading...</p>;
+  }
 
   const handleTemplateSelect = (templateId: string) => {
     setAssociatedTemplateId(templateId);
     onResetConfig();
-    const selectedTemplate = templates.find(
-      (template) => String(template.id) === templateId,
-    );
+    // const selectedTemplate = templates.find(
+    //   (template) => String(template.id) === templateId,
+    // );
 
-    if (selectedTemplate) {
-      selectedTemplate.placeholders.map((placeholder) => {
-        // onAddElement(createInputElement("text", placeholder.name));
-      });
-    }
+    // if (selectedTemplate) {
+    //   selectedTemplate.placeholders.map((placeholder) => {
+    //     // onAddElement(createInputElement("text", placeholder.name));
+    //   });
+    // }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex-1">
       <div className="p-4 border-b border-gray-200 bg-gray-50">
         <h2 className="font-medium text-gray-700">Form Association</h2>
       </div>
@@ -48,10 +56,11 @@ function FormAssociation({
             id="demo-simple-select"
             value={associatedTemplateId}
             onChange={(e) => handleTemplateSelect(e.target.value as string)}
+            sx={{ height: 40 }}
           >
             {templates.map((template) => (
               <MenuItem key={template.id} value={template.id}>
-                {template.metadata.fileName}
+                {template.filename}
               </MenuItem>
             ))}
           </Select>

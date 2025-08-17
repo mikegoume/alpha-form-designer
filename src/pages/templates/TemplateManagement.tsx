@@ -55,7 +55,6 @@ function TemplateManagement() {
   }, [documentMetadata, template]);
 
   const onMetadataUpdate = (metadata: MetadataForm) => {
-    console.log(metadata);
     setDocumentMetadata(metadata);
   };
 
@@ -74,8 +73,6 @@ function TemplateManagement() {
   };
 
   const isUploading = useMemo(() => template?.name === undefined, [template]);
-
-  console.log(documentMetadata);
 
   const renderActionButtons = () => {
     if (isEditing) {

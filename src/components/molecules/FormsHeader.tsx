@@ -1,37 +1,26 @@
 import { useNavigate } from "react-router";
-import { Box, Button, Tab, Tabs, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Plus } from "lucide-react";
 
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
-interface IFormsHeaderProps {
-  value: number;
-  handleChange: (event: React.SyntheticEvent, newValue: number) => void;
-}
-
-function FormsHeader({ value, handleChange }: IFormsHeaderProps) {
+function FormsHeader() {
   const navigate = useNavigate();
+
   const handleCreatePress = () => {
     navigate("create");
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10 pt-4 flex-col gap-4">
+    <div className="bg-white border-b border-gray-200 sticky top-0 z-10 py-4 flex-col gap-4">
       <div className="flex flex-row items-center justify-between px-8">
         <div className=" flex flex-col justify-between">
           <p className="text-2xl font-semibold tracking-tight leading-8">
-            Templates
+            Forms
           </p>
           <Typography
             className="font-medium tracking-tight"
             color="text.secondary"
           >
-            Manage your templates
+            Manage your forms
           </Typography>
         </div>
         <Button
@@ -43,16 +32,6 @@ function FormsHeader({ value, handleChange }: IFormsHeaderProps) {
           Create Form
         </Button>
       </div>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", px: 4 }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          <Tab label="My Forms" {...a11yProps(0)} />
-          <Tab label="Available Forms" {...a11yProps(1)} />
-        </Tabs>
-      </Box>
     </div>
   );
 }
