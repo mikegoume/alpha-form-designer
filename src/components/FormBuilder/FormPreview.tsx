@@ -97,9 +97,8 @@ interface FormPreviewProps {
   onValueChange: (key: string, value: any) => void;
   onSelectElement?: React.Dispatch<React.SetStateAction<string | null>>;
   selectedElementId?: string | null;
-  onReorderElements?: (formVariables: any) => void;
+  onReorderFormVariables?: (formVariables: any) => void;
   isEditable?: boolean;
-  onRemoveElement?: (elementId: string) => void;
   onFormSubmit?: () => void;
 }
 
@@ -109,9 +108,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   onValueChange,
   onSelectElement,
   selectedElementId,
-  onReorderElements,
+  onReorderFormVariables,
   isEditable = false,
-  onRemoveElement,
   onFormSubmit,
 }) => {
   const sensors = useSensors(
@@ -211,7 +209,15 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (!over || active.id === over.id || !onReorderElements) return;
+    if (!over || active.id === over.id || !onReorderFormVariables) {
+      console.log(
+        "if: ",
+        !over,
+        active.id === over.id,
+        !onReorderFormVariables,
+      );
+      return;
+    }
 
     const oldIndex = formConfig.formVariables.findIndex(
       (el) => el.id === active.id,
@@ -227,10 +233,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     // Update the order property for each item
     const reorderedElements = items.map((item, index) => ({
       ...item,
-      order: index,
+      position: index,
     }));
 
-    onReorderElements(reorderedElements);
+    onReorderFormVariables(reorderedElements);
   };
 
   if (isEditable) {
@@ -257,7 +263,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
                     element={element}
                     selectedElementId={selectedElementId}
                     onSelectElement={onSelectElement}
-                    onRemoveElement={onRemoveElement}
                     formValues={formValues}
                     onValueChange={onValueChange}
                     onButtonClick={handleButtonClick}

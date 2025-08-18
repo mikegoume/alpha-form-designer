@@ -23,7 +23,8 @@ import { DocumentTemplate, generateDocument } from "../../api/endpoints";
 import { fetchTemplates } from "../../api/templates";
 import FormPreview from "../../components/FormBuilder/FormPreview";
 import FilledTemplateHeader from "../../components/molecules/FilledTemplateHeader";
-import { Form, FormConfig, FormValues } from "../../types/form";
+import { Form, FormValues } from "../../types/form";
+import { prepareDataToGenerateDocument } from "../../utils/documentUtils";
 
 function TemplateFillForm() {
   const { id } = useParams();
@@ -103,40 +104,12 @@ function TemplateFillForm() {
   const handleSubmit = async (format: string) => {
     if (!format) return;
 
-    const dataToSend = {
-      templateId: formConfig.templateId,
-      templateVersion: formConfig.version,
-      // issueDate: formConfig.creationTs,
-      templateType: "DOCX",
-      fileProperties: {
-        fileName: formConfig.name,
-        fileFormat: format,
-        fileMetadata: {
-          title: formConfig.name,
-          author: "DocGen Author",
-          subject: "DocGen Subject",
-          keywords: "DocGen Keywords",
-          creator: "DocGen Creator",
-        },
-      },
-      metadata: {
-        masterMetadata: {
-          resolution: "HIGH",
-          langId: "el-GR",
-          restrictEditing: true,
-          restrictionPassword: "123456",
-        },
-        templateMetadata: [
-          ...(formConfig as FormConfig).formVariables
-            .filter((v) => v.name && v.type && formValues[v.id] !== undefined)
-            .map((v) => ({
-              name: v.name,
-              type: "TEXT",
-              value: formValues[v.id],
-            })),
-        ],
-      },
-    };
+    const dataToSend = prepareDataToGenerateDocument(
+      format,
+      formConfig,
+      formValues,
+      true,
+    );
 
     generateDoc.mutate(dataToSend);
   };

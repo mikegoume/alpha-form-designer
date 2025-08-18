@@ -14,8 +14,9 @@ import { fetchTemplate } from "../../api/templates";
 import ElementsPanel from "../../components/FormBuilder/ElementsPanel";
 import FormAssociation from "../../components/FormBuilder/FormAssociation";
 import FormPreview from "../../components/FormBuilder/FormPreview";
+import PropertiesPanel from "../../components/FormBuilder/PropertiesPanel";
 import FormBuilderHeader from "../../components/molecules/FormBuilderHeader";
-import { FormConfig, FormValues } from "../../types/form";
+import { FormConfig, FormValues, FormVariable } from "../../types/form";
 import { Placeholder } from "../../types/templates";
 import {
   createInputElement,
@@ -68,7 +69,7 @@ const FormBuilder: React.FC = () => {
   });
 
   const form = formData?.data;
-  let extractedVariables = transformTemplateFields(
+  const extractedVariables = transformTemplateFields(
     template?.data.placeholders ?? [],
   );
 
@@ -134,24 +135,6 @@ const FormBuilder: React.FC = () => {
         el.id === updatedElement.id ? updatedElement : el,
       ),
     });
-  };
-
-  // Handle removing an element
-  const handleRemoveElement = (elementId: string) => {
-    extractedVariables = extractedVariables.filter(
-      (ev) => String(ev.id) !== elementId,
-    );
-
-    setFormConfig((prevConfig) => ({
-      ...prevConfig,
-      formVariables: prevConfig.formVariables.filter(
-        (el) => el.id !== elementId,
-      ),
-    }));
-
-    if (selectedElementId === elementId) {
-      setSelectedElementId(null);
-    }
   };
 
   // Handle form values change
@@ -255,21 +238,10 @@ const FormBuilder: React.FC = () => {
                     selectedElementId={selectedElementId}
                     onReorderFormVariables={handleReorderFormVariables}
                     isEditable={true}
-                    onRemoveElement={handleRemoveElement}
                   />
                 </div>
               </div>
             </div>
-
-            {/* Right Panel - Properties */}
-            {/* <div className="lg:col-span-3">
-              <PropertiesPanel
-                formConfig={formConfig}
-                element={selectedElement as FormVariable}
-                onUpdateElement={handleUpdateElement}
-                onRemoveElement={handleRemoveElement}
-              />
-            </div> */}
             <AnimatePresence>
               {selectedElementId && (
                 <>
@@ -302,12 +274,12 @@ const FormBuilder: React.FC = () => {
                     exit={{ x: "100%" }}
                     transition={{ type: "tween", duration: 0.3 }}
                   >
-                    {/* <PropertiesPanel
+                    <PropertiesPanel
                       formConfig={formConfig}
                       element={selectedElement as FormVariable}
                       onUpdateElement={handleUpdateElement}
                       // onRemoveElement={handleRemoveElement}
-                    /> */}
+                    />
                   </motion.div>
                 </>
               )}
