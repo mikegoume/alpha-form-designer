@@ -44,12 +44,10 @@ function Templates() {
     <div className="min-h-screen bg-gray-50">
       <TemplatesHeader />
       {isAdmin && <TemplateUpload />}
-      <div className="flex flex-col gap-8">
-        <div className="mx-8">
-          <FilterComponent />
-          <div className="grid grid-cols-10 gap-2">
-            {renderTemplates(templates)}
-          </div>
+      <div className="flex flex-col gap-8 px-8">
+        <FilterComponent />
+        <div className="grid grid-cols-10 gap-2">
+          {renderTemplates(templates)}
         </div>
       </div>
     </div>
