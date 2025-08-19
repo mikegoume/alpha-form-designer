@@ -20,7 +20,7 @@
 		"@monaco-editor/react": "^4.6.0",
 		"@mui/material": "^7.1.0",
 		"@mui/styled-engine-sc": "^7.1.0",
-		"@mui/x-date-pickers": "^8.7.0",
+		"@mui/x-date-pickers": "^8.10.0",
 		"@radix-ui/react-slot": "^1.2.3",
 		"@tailwindcss/postcss": "^4.1.8",
 		"@tailwindcss/vite": "^4.1.7",
