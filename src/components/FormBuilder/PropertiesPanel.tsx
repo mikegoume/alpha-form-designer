@@ -13,6 +13,8 @@ import {
   Select,
   Stack,
   Switch,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
@@ -25,24 +27,43 @@ import { Endpoint } from "../../types/endpoints";
 import {
   FieldTypeOption,
   FieldTypes,
+  FormConfig,
   FormInputElementType,
   FormVariable,
 } from "../../types/form";
+import CustomTabPanel from "../atoms/TabPanel";
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 
 interface PropertiesPanelProps {
+  formConfig: FormConfig;
   element: FormVariable;
   onUpdateElement: (updatedElement: any) => void;
 }
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
+  formConfig,
   element,
   onUpdateElement,
 }) => {
-  const [properties, setProperties] = useState<FormInputElementType>({
+  const { templateId, formVariables } = formConfig;
+
+  const availableFormvariables = useMemo(() => {
+    return formVariables.filter((fv) => fv.type !== "button");
+  }, [formVariables]);
+
+  const [properties, setProperties] = useState<FormVariable>({
     label: "",
     type: FieldTypes.TEXT,
     required: false,
   });
+
+  const [tabValue, setTabValue] = useState(0);
 
   const { data: endpointsData } = useQuery({
     queryKey: ["services"],
@@ -58,12 +79,31 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   }, [element]);
 
   const updateProperty = (key: keyof FormInputElementType, value: any) => {
-    setProperties((prev) => ({ ...prev, [key]: value }));
+    setProperties((prev) => {
+      onUpdateElement({ ...prev, [key]: value });
+      return { ...prev, [key]: value };
+    });
   };
+
+  const selectedEndpoint = useMemo(() => {
+    return endpoints?.find(
+      (endpoint) => endpoint.id === properties.serviceIdToLoad,
+    );
+  }, [endpoints, properties.serviceIdToLoad]);
+
+  const selectedApiCallService = useMemo(() => {
+    return endpoints?.find((endpoint) => endpoint.id === properties.serviceId);
+  }, [endpoints, properties.serviceId]);
+
+  const handleTabValueChange = (_: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
   const addColumn = () => {
     const currentColumns = properties.columns || [];
     updateProperty("columns", [...currentColumns, { name: "", type: "text" }]);
   };
+
   const updateColumn = (
     index: number,
     field: "name" | "type",
@@ -74,17 +114,12 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     newColumns[index] = { ...newColumns[index], [field]: value };
     updateProperty("columns", newColumns);
   };
+
   const removeColumn = (index: number) => {
     const currentColumns = properties.columns || [];
     const newColumns = currentColumns.filter((_, i) => i !== index);
     updateProperty("columns", newColumns);
   };
-
-  const selectedEndpoint = useMemo(() => {
-    return endpoints?.find(
-      (endpoint) => endpoint.id === properties.serviceIdToLoad,
-    );
-  }, [endpoints, properties.serviceIdToLoad]);
 
   const renderTypeSpecificProperties = () => {
     switch (properties.type) {
@@ -188,39 +223,58 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 ))}
               </Select>
             </FormControl>
-            {selectedEndpoint?.requestParameters.map((requestParam) => (
-              <div key={requestParam.id}>
-                <p>{requestParam.name}</p>
-                <div>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                    <Select
-                      label="Type"
-                      id="demo-simple-select-label"
-                      value={properties.defaultValue ?? ""}
-                      onChange={(e) => {}}
-                      fullWidth
-                    >
-                      <MenuItem value={"hardcoded"}>Hardcoded</MenuItem>
-                      <MenuItem value={"input_key"}>Input Field</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                    <Select
-                      label="Type"
-                      id="demo-simple-select-label"
-                      value={properties.defaultValue ?? ""}
-                      onChange={(e) => {}}
-                      fullWidth
-                    >
-                      <MenuItem value={"hardcoded"}>Hardcoded</MenuItem>
-                      <MenuItem value={"input_key"}>Input Field</MenuItem>
-                    </Select>
-                  </FormControl>
+            {selectedEndpoint?.requestParameters.map(
+              (requestParam, requestParamIndex) => (
+                <div
+                  key={requestParam.id}
+                  className="flex flex-col gap-4 border rounded-lg p-4"
+                >
+                  <p>{requestParam.name}</p>
+                  <div className="flex flex-row gap-4">
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Type
+                      </InputLabel>
+                      <Select
+                        label="Type"
+                        id="demo-simple-select-label"
+                        value={
+                          properties.requestParameters?.[requestParamIndex]
+                            .type ?? ""
+                        }
+                        fullWidth
+                      >
+                        <MenuItem value={"hardcoded"}>Hardcoded</MenuItem>
+                        <MenuItem value={"input_key"}>Input Field</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Input Field
+                      </InputLabel>
+                      <Select
+                        label="Input Field"
+                        id="demo-simple-select-label"
+                        value={
+                          properties.requestParameters?.[requestParamIndex]
+                            .value ?? ""
+                        }
+                        fullWidth
+                      >
+                        {availableFormvariables.map((formVariable) => (
+                          <MenuItem
+                            key={formVariable.id}
+                            value={(formVariable as FormInputElementType).name}
+                          >
+                            {(formVariable as FormInputElementType).name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </Box>
         );
       case FieldTypes.TABLE:
@@ -243,7 +297,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               </Button>
             </Box>
             <Stack spacing={1}>
-              {(properties.columns || []).map((column, index) => (
+              {properties.columns?.map((column, index) => (
                 <Box key={index} display="flex" alignItems="center" gap={1}>
                   <TextField
                     value={column.name}
@@ -259,12 +313,12 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                       updateColumn(index, "type", e.target.value)
                     }
                     size="small"
-                    sx={{ minWidth: 120 }}
+                    sx={{ minWidth: 120, height: 55.96 }}
                   >
-                    <MenuItem value="text">Text</MenuItem>
-                    <MenuItem value="number">Number</MenuItem>
-                    <MenuItem value="boolean">Boolean</MenuItem>
-                    <MenuItem value="date">Date</MenuItem>
+                    <MenuItem value={FieldTypes.TEXT}>Text</MenuItem>
+                    <MenuItem value={FieldTypes.NUMBER}>Number</MenuItem>
+                    <MenuItem value={FieldTypes.BOOLEAN}>Boolean</MenuItem>
+                    <MenuItem value={FieldTypes.DATETIME}>Date</MenuItem>
                   </Select>
                   <IconButton
                     size="small"
@@ -299,33 +353,12 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 onChange={(e) => updateProperty("maxDate", e.target.value)}
               />
             </Grid>
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Date Format
-              </Typography>
-              <Select
-                fullWidth
-                displayEmpty
-                value={properties.dateFormat || ""}
-                onChange={(e) => updateProperty("dateFormat", e.target.value)}
-              >
-                <MenuItem value="" disabled>
-                  Select date format
-                </MenuItem>
-                <MenuItem value="MM/DD/YYYY">MM/DD/YYYY</MenuItem>
-                <MenuItem value="DD/MM/YYYY">DD/MM/YYYY</MenuItem>
-                <MenuItem value="YYYY-MM-DD">YYYY-MM-DD</MenuItem>
-                <MenuItem value="MM-DD-YYYY">MM-DD-YYYY</MenuItem>
-              </Select>
-            </Box>
           </Box>
         );
       default:
         return null;
     }
   };
-
-  // console.log(properties);
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -342,30 +375,168 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             value={element.label}
             onChange={(e) => onUpdateElement(e.target.value)}
           />
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Field Type</InputLabel>
-            <Select
-              label="Field Type"
-              id="demo-simple-select-label"
-              value={properties.type}
-              onChange={(e) => updateProperty("type", e.target.value)}
-              fullWidth
-            >
-              {inputTypes.map((inputType: FieldTypeOption) => (
-                <MenuItem key={inputType.type} value={inputType.type}>
-                  {inputType.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControlLabel control={<Checkbox />} label="Required" />
-        </div>
-        <Divider orientation="horizontal" flexItem />
-        <div className="flex flex-col gap-4 p-4">
-          {properties.type !== FieldTypes.IMAGE && (
-            <h3 className="text-sm font-medium">Type-specific Properties</h3>
+          {properties.type !== "button" ? (
+            <>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Field Type
+                </InputLabel>
+                <Select
+                  label="Field Type"
+                  id="demo-simple-select-label"
+                  value={properties.type}
+                  onChange={(e) => updateProperty("type", e.target.value)}
+                  fullWidth
+                >
+                  {inputTypes.map((inputType: FieldTypeOption) => (
+                    <MenuItem key={inputType.type} value={inputType.type}>
+                      {inputType.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControlLabel control={<Checkbox />} label="Required" />
+              <Divider orientation="horizontal" flexItem />
+              <div className="flex flex-col gap-4">
+                {properties.type !== FieldTypes.IMAGE && (
+                  <h3 className="text-sm font-medium">
+                    Type-specific Properties
+                  </h3>
+                )}
+                {renderTypeSpecificProperties()}
+              </div>
+            </>
+          ) : (
+            <>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Service</InputLabel>
+                <Select
+                  label="Service"
+                  id="demo-simple-select-label"
+                  value={properties.serviceId ?? ""}
+                  onChange={(e) => updateProperty("serviceId", e.target.value)}
+                  fullWidth
+                >
+                  {endpoints?.map((endpoint: Endpoint) => (
+                    <MenuItem key={endpoint.id} value={endpoint.id}>
+                      <div className="flex flex-col">
+                        <p className="text-16">{endpoint.name}</p>
+                        <p className="text-10 text-gray-400">
+                          {endpoint.description}
+                        </p>
+                      </div>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Box>
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabValueChange}
+                  aria-label="basic tabs example"
+                >
+                  <Tab label="Service Parameters" {...a11yProps(0)} />
+                  <Tab label="Response Mapping" {...a11yProps(1)} />
+                </Tabs>
+              </Box>
+              <CustomTabPanel value={tabValue} index={0}>
+                {selectedApiCallService?.requestParameters.map(
+                  (requestParam, requestParamIndex) => (
+                    <div
+                      key={requestParam.id}
+                      className="flex flex-col border rounded-lg p-4 gap-4"
+                    >
+                      <p>{requestParam.name}</p>
+                      <div className="flex flex-row gap-4">
+                        <FormControl fullWidth>
+                          <InputLabel id="demo-simple-select-label">
+                            Type
+                          </InputLabel>
+                          <Select
+                            label="Type"
+                            id="demo-simple-select-label"
+                            value={
+                              properties.serviceParams?.[requestParamIndex]
+                                .type ?? ""
+                            }
+                            fullWidth
+                          >
+                            <MenuItem value={"hardcoded"}>Hardcoded</MenuItem>
+                            <MenuItem value={"input_key"}>Input Field</MenuItem>
+                          </Select>
+                        </FormControl>
+                        <FormControl fullWidth>
+                          <InputLabel id="demo-simple-select-label">
+                            Input Field
+                          </InputLabel>
+                          <Select
+                            label="Input Field"
+                            id="demo-simple-select-label"
+                            value={
+                              properties.serviceParams?.[requestParamIndex]
+                                .value ?? ""
+                            }
+                            fullWidth
+                          >
+                            {availableFormvariables.map((formVariable) => (
+                              <MenuItem
+                                key={formVariable.id}
+                                value={
+                                  (formVariable as FormInputElementType).name
+                                }
+                              >
+                                {(formVariable as FormInputElementType).name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                    </div>
+                  ),
+                )}
+              </CustomTabPanel>
+              <CustomTabPanel value={tabValue} index={1}>
+                <div className="flex flex-col gap-4">
+                  {selectedApiCallService?.responsePaths.map(
+                    (responsePath, responsePathIndex) => (
+                      <div
+                        key={responsePath.id}
+                        className="flex flex-row border rounded-lg p-4 gap-4 items-center justify-between"
+                      >
+                        <p>{responsePath.path}</p>
+
+                        <FormControl sx={{ width: "75%" }}>
+                          <InputLabel id="demo-simple-select-label">
+                            Target Input
+                          </InputLabel>
+                          <Select
+                            label="Target Input"
+                            id="demo-simple-select-label"
+                            value={
+                              properties.responseMapping?.[responsePathIndex]
+                                .targetInput ?? ""
+                            }
+                            fullWidth
+                          >
+                            {availableFormvariables.map((formVariable) => (
+                              <MenuItem
+                                key={formVariable.id}
+                                value={
+                                  (formVariable as FormInputElementType).name
+                                }
+                              >
+                                {(formVariable as FormInputElementType).name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </CustomTabPanel>
+            </>
           )}
-          {renderTypeSpecificProperties()}
         </div>
       </div>
     </div>

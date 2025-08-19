@@ -278,7 +278,6 @@ const FormBuilder: React.FC = () => {
                       formConfig={formConfig}
                       element={selectedElement as FormVariable}
                       onUpdateElement={handleUpdateElement}
-                      // onRemoveElement={handleRemoveElement}
                     />
                   </motion.div>
                 </>
