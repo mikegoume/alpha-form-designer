@@ -64,7 +64,7 @@ export function updateFormValuesFromApiResponse(
   for (const key of Object.keys(apiResponse)) {
     const variable = formDefinition.formVariables.find((v) => v.label === key);
     if (variable) {
-      updatedValues[variable.id] = apiResponse[key];
+      updatedValues[(variable as FormInputElementType).id] = apiResponse[key];
     }
   }
 

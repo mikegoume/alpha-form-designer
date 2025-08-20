@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { renderAsync } from "docx-preview";
-import { motion } from "framer-motion";
 import { AlarmCheck as FormCheck, Download, FileText } from "lucide-react";
 
 import { DocumentTemplate, generateDocument } from "../../api/endpoints";
@@ -32,7 +31,6 @@ function TemplateFillForm() {
   const docxContainerRef = useRef<HTMLDivElement | null>(null);
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [docxBlob, setDocxBlob] = useState<Blob | null>(null);
   const [formValues, setFormValues] = useState<FormValues>({});
   const [selectedFormId, setSelectedFormId] = useState<number | string>("");
   const [showFormatModal, setShowFormatModal] = useState(false);
@@ -42,8 +40,6 @@ function TemplateFillForm() {
     mutationKey: [id],
     mutationFn: (data: DocumentTemplate) => generateDocument(data),
     onSuccess: async (data) => {
-      console.log("data: ", data);
-
       const blob = new Blob([data], {
         type:
           selectedFormat === "PDF"
@@ -55,9 +51,6 @@ function TemplateFillForm() {
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
       } else if (selectedFormat === "DOCX" && docxContainerRef.current) {
-        // Store the blob for download functionality
-        setDocxBlob(blob);
-
         // Clear previous content
         docxContainerRef.current.innerHTML = "";
         await renderAsync(blob, docxContainerRef.current, undefined, {
@@ -95,53 +88,33 @@ function TemplateFillForm() {
   }, [selectedForm]);
 
   const handleFormValueChange = (key: string, value: any) => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [key]: value,
-    }));
+    setFormValues((prevValues) => ({ ...prevValues, [key]: value }));
   };
 
-  const handleSubmit = async (format: string) => {
-    if (!format) return;
+  const handleSubmit = async () => {
+    if (!selectedFormat) return;
 
     const dataToSend = prepareDataToGenerateDocument(
-      format,
+      selectedFormat,
       formConfig,
       formValues,
       true,
     );
-
     generateDoc.mutate(dataToSend);
   };
 
   const handleFormatSelect = (format: string) => {
     setSelectedFormat(format);
-    handleSubmit(format);
+    handleSubmit();
   };
 
   const handleCloseModal = () => {
     setShowFormatModal(false);
   };
 
-  const handleDownloadDocx = () => {
-    if (!docxBlob || !formConfig) return;
+  console.log("formValues: ", formValues, formConfig);
 
-    // Create download link
-    const url = URL.createObjectURL(docxBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${formConfig.name || "document"}.docx`;
-
-    // Append to body, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Clean up the URL object
-    URL.revokeObjectURL(url);
-  };
-
-  return selectedFormat === "PDF" && pdfUrl ? (
+  return pdfUrl ? (
     <iframe
       src={pdfUrl}
       title={`${selectedFormat} Preview`}
@@ -149,45 +122,12 @@ function TemplateFillForm() {
       height="100%"
       style={{ border: "none" }}
     />
-  ) : selectedFormat === "DOCX" ? (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.2 }}
-      className="bg-white shadow-apple overflow-hidden flex flex-col h-full"
-    >
-      {/* Download Button Header */}
-      <div className="bg-gray-50 border-b border-gray-200 px-6 py-3 flex justify-between items-center">
-        <Typography variant="h6" className="text-gray-700">
-          Document Preview
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleDownloadDocx}
-          startIcon={<Download className="h-4 w-4" />}
-          disabled={!docxBlob}
-          sx={{
-            backgroundColor: "#1976d2",
-            "&:hover": {
-              backgroundColor: "#1565c0",
-            },
-          }}
-        >
-          Download DOCX
-        </Button>
-      </div>
-
-      {/* Document Preview Container */}
-      <div className="flex-1 overflow-auto p-4">
-        <div ref={docxContainerRef} />
-      </div>
-    </motion.div>
   ) : (
     selectedTemplate && (
       <>
         <FilledTemplateHeader showDownloadButton={false} />
         <div className="flex flex-col flex-1 items-center gap-6 p-4 bg-neutral-100">
-          {selectedTemplate.forms.length >= 1 && (
+          {selectedTemplate.forms.length > 1 && (
             <FormControl
               sx={{ width: "100%", backgroundColor: "white", maxWidth: 500 }}
             >
@@ -207,7 +147,6 @@ function TemplateFillForm() {
               </Select>
             </FormControl>
           )}
-
           <div className="bg-white rounded-xl shadow-lg w-[1000px]">
             {formConfig ? (
               <FormPreview
@@ -226,7 +165,6 @@ function TemplateFillForm() {
             )}
           </div>
         </div>
-
         {/* Format Selection Modal */}
         <Dialog
           open={showFormatModal}

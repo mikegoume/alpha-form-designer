@@ -11,8 +11,19 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useMutation } from "@tanstack/react-query";
 
-import { ButtonElement, FormConfig, FormValues } from "../../types/form";
+import { fetchObjectDataEndpoint } from "../../api/endpoints";
+import {
+  ButtonElement,
+  FormConfig,
+  FormInputElementType,
+  FormValues,
+} from "../../types/form";
+import {
+  mapServiceParamsToValues,
+  updateFormValuesFromApiResponse,
+} from "../../utils/endpoints";
 import SortableItem from "../molecules/SortableItem";
 import FormRenderer from "./FormRenderer";
 
@@ -51,42 +62,36 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     }),
   );
 
+  const fetchObjectDataMutation = useMutation({
+    mutationKey: ["fetch-object-data"],
+    mutationFn: ({ endpointId, data }: { endpointId: number; data: any }) =>
+      fetchObjectDataEndpoint(endpointId, data),
+    onSuccess: (res) => {
+      const newValues = updateFormValuesFromApiResponse(
+        res.data,
+        formConfig,
+        formValues,
+      );
+      Object.keys(newValues).map((val: string) => {
+        onValueChange(val, newValues[val]);
+      });
+    },
+  });
+
   // Handle API call simulation
   const handleApiCall = async (buttonElement: ButtonElement) => {
-    if (!buttonElement.apiConfig) return;
-
-    const {
-      url,
-      method,
-      // headers = {},
-      responseMapping = {},
-      inputParams = {},
-    } = buttonElement.apiConfig;
+    const { serviceParams, serviceId } = buttonElement;
+    if (!serviceId) return;
 
     try {
-      // Replace URL parameters with input values
-      let finalUrl = url;
-      Object.values(inputParams).forEach((inputKey) => {
-        const value = formValues[inputKey];
-
-        if (value !== undefined) {
-          finalUrl = finalUrl.concat(`/${value}`);
-        }
+      fetchObjectDataMutation.mutate({
+        endpointId: serviceId,
+        data: mapServiceParamsToValues(
+          serviceParams ?? [],
+          formConfig,
+          formValues,
+        ),
       });
-
-      const response = await fetch(finalUrl, {
-        method,
-        // headers,
-      }).then((res) => res.json());
-
-      // Update form values based on response mapping
-      Object.values(responseMapping).forEach((formKey) => {
-        if (response[formKey] !== undefined) {
-          onValueChange(formKey, response[formKey]);
-        }
-      });
-
-      return response;
     } catch (error) {
       console.error("API call failed:", error);
       return null;
@@ -96,36 +101,23 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   // Handle button click based on action type
   const handleButtonClick = async (buttonElement: ButtonElement) => {
     switch (buttonElement.actionType) {
-      case "api":
+      case "api_call":
         return await handleApiCall(buttonElement);
 
       case "reset":
         // Reset form to default values
         formConfig.formVariables.forEach((element) => {
-          if ("key" in element && element.defaultValue !== undefined) {
-            onValueChange(element.key, element.defaultValue);
-          }
-        });
-        break;
-
-      case "clear":
-        // Clear all form values
-        formConfig.formVariables.forEach((element) => {
-          if ("key" in element) {
-            onValueChange(element.key, "");
-          }
+          onValueChange(
+            String(element.id),
+            (element as FormInputElementType).defaultValue,
+          );
         });
         break;
 
       case "submit":
-        // Handle form submission (just log values for demo)
-        // console.log('Form submitted with values:', formValues);
         if (onFormSubmit) {
           onFormSubmit();
         }
-        // alert(
-        //   "Form submitted with values: " + JSON.stringify(formValues, null, 2)
-        // );
         break;
     }
   };
@@ -134,15 +126,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (!over || active.id === over.id || !onReorderFormVariables) {
-      console.log(
-        "if: ",
-        !over,
-        active.id === over.id,
-        !onReorderFormVariables,
-      );
-      return;
-    }
+    if (!over || active.id === over.id || !onReorderFormVariables) return;
 
     const oldIndex = formConfig.formVariables.findIndex(
       (el) => el.id === active.id,
@@ -200,21 +184,22 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     );
   }
 
-  // Non-editable preview mode
   return (
     <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h2 className="text-xl font-semibold mb-6">{formConfig.name}</h2>
+      <h2 className="text-xl font-semibold mb-6">{formConfig?.name}</h2>
 
       {formConfig.formVariables
         .sort((a, b) => a.position - b.position)
         .map((element) => (
           <div key={element.id} className="mb-4">
             <FormRenderer
+              formConfig={formConfig}
+              formValues={formValues}
               element={element}
-              value={formValues["key" in element ? element.key : ""]}
+              value={formValues[element.id]}
               onChange={(value) => {
-                if ("key" in element) {
-                  onValueChange(element.key, value);
+                if (element.type !== "button") {
+                  onValueChange(String(element.id), value);
                 }
               }}
               onButtonClick={() => {

@@ -1,8 +1,10 @@
 import React, { useCallback, useRef, useState } from "react";
 import { AlertCircle, Image, Upload, X } from "lucide-react";
 
+import { convertToBase64 } from "../../utils/formUtils";
+
 interface ImageUploadProps {
-  onImageSelect: (file: File) => void;
+  onImageSelect: (value: any) => void;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
@@ -25,16 +27,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
   };
 
   const handleFile = useCallback(
-    (file: File) => {
+    async (file: File) => {
       if (!validateFile(file)) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreview(e.target?.result as string);
-        setFileName(file.name);
-        onImageSelect(file);
-      };
-      reader.readAsDataURL(file);
+      const base64 = await convertToBase64(file);
+      onImageSelect(base64);
     },
     [onImageSelect],
   );

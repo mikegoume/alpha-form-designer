@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -16,12 +16,15 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs, { Dayjs } from "dayjs";
+import { useMutation } from "@tanstack/react-query";
 
-import { FieldTypes } from "../../types/form";
+import { fetchArrayDataEndpoint } from "../../api/endpoints";
+import { Column, FieldTypes, FormConfig, FormValues } from "../../types/form";
+import { mapRequestParamsToValues } from "../../utils/endpoints";
 import ImageUpload from "../atoms/ImageUpload";
-
 interface FormRendererProps {
+  formConfig: FormConfig;
+  formValues: FormValues;
   element: any;
   value?: any;
   onChange?: (value: any) => void;
@@ -29,23 +32,44 @@ interface FormRendererProps {
 }
 
 const FormRenderer: React.FC<FormRendererProps> = ({
+  formConfig,
+  formValues,
   element,
   value,
   onChange,
   onButtonClick,
 }) => {
   // Render input elements
-  const { id, type, label, serviceIdToLoad, columns } = element;
+  const { type, label, serviceIdToLoad, columns, requestParameters } = element;
 
-  // const getDefaultRow = () => {
-  //   const row = { id: uuidv4() };
-  //   (columns ?? []).forEach((col) => {
-  //     if (col.type === FieldTypes.BOOLEAN) row[col.name] = false;
-  //     else if (col.type === "date") row[col.name] = null;
-  //     else row[col.name] = "";
-  //   });
-  //   return row;
-  // };
+  const [availableOptions, setAvailableOptions] = useState<any[]>([]);
+
+  const fetchArrayDataMutation = useMutation({
+    mutationKey: ["fetch-array-data"],
+    mutationFn: ({ endpointId, data }: { endpointId: number; data: any }) =>
+      fetchArrayDataEndpoint(endpointId, data),
+    onSuccess: (res) =>
+      setAvailableOptions(
+        res.data.map((val: string) => ({ label: val, value: val })),
+      ),
+  });
+
+  useEffect(() => {
+    if (!serviceIdToLoad || type !== FieldTypes.LIST) return;
+
+    fetchArrayDataMutation.mutate({
+      endpointId: serviceIdToLoad,
+      data: mapRequestParamsToValues(requestParameters, formConfig, formValues),
+    });
+  }, [serviceIdToLoad, formValues]);
+
+  const getDefaultRow = () => {
+    let row: any = {};
+
+    columns?.map((col: Column) => (row = { ...row, [col.name]: "" }));
+
+    return row;
+  };
 
   const [rows, setRows] = useState([]);
 
@@ -53,11 +77,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
     );
+    onChange && onChange(rows);
   };
 
   const addRow = () => {
-    setRows((prev) => [...prev]);
+    setRows((prev) => [...prev, getDefaultRow()]);
   };
+
+  console.log(label, value);
 
   switch (type) {
     case FieldTypes.TEXT:
@@ -78,24 +105,20 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           <Select
             label={label}
             id="demo-simple-select-label"
-            value={""}
+            value={value ?? ""}
             fullWidth
+            onChange={(e) => onChange && onChange(e.target.value)}
           >
-            {[]?.map((endpoint: any) => (
-              <MenuItem key={endpoint.id} value={endpoint.id}>
-                <div className="flex flex-col">
-                  <p className="text-16">{endpoint.name}</p>
-                  <p className="text-10 text-gray-400">
-                    {endpoint.description}
-                  </p>
-                </div>
+            {availableOptions?.map((option: any) => (
+              <MenuItem key={option.label} value={option.value}>
+                <p className="text-16">{option.label}</p>
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       );
     case FieldTypes.IMAGE:
-      return <ImageUpload onImageSelect={() => {}} />;
+      return <ImageUpload onImageSelect={onChange as (value: any) => void} />;
     case FieldTypes.TABLE:
       return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -103,20 +126,22 @@ const FormRenderer: React.FC<FormRendererProps> = ({
             <TableHead>
               <TableRow>
                 {columns.map((col) => (
-                  <TableCell key={col.name}>{col.name}</TableCell>
+                  <TableCell key={col.name}>{col.value}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {rows?.map((row) => (
                 <TableRow key={row.id}>
                   {columns.map((col) => {
                     const value = row[col.name];
 
                     return (
                       <TableCell key={col.name}>
-                        {col.type === "text" || col.type === "number" ? (
+                        {col.type === FieldTypes.TEXT ||
+                        col.type === FieldTypes.NUMBER ? (
                           <TextField
+                            label={col.value}
                             type={col.type}
                             value={value as string | number}
                             onChange={(e) =>
@@ -160,7 +185,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
       );
     case "button":
       return (
-        <Button variant="contained" size="large">
+        <Button variant="contained" size="large" onClick={onButtonClick}>
           {label}
         </Button>
       );
@@ -169,4 +194,4 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   }
 };
 
-export default FormRenderer;
+export default memo(FormRenderer);

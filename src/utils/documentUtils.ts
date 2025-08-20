@@ -53,7 +53,7 @@ export function prepareDataToGenerateDocument(
               ? {
                   name: v.name.split(".base64")[0],
                   type: "IMAGE",
-                  base64: formValues[v.id],
+                  base64: formValues[v.id] ?? "",
                 }
               : v.type === "TABLE"
                 ? {
