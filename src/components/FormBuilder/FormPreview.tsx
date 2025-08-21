@@ -80,12 +80,12 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   // Handle API call simulation
   const handleApiCall = async (buttonElement: ButtonElement) => {
-    const { serviceParams, serviceId } = buttonElement;
-    if (!serviceId) return;
+    const { serviceParams, serviceIdToLoad } = buttonElement;
+    if (!serviceIdToLoad) return;
 
     try {
       fetchObjectDataMutation.mutate({
-        endpointId: serviceId,
+        endpointId: serviceIdToLoad,
         data: mapServiceParamsToValues(
           serviceParams ?? [],
           formConfig,

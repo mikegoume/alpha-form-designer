@@ -20,7 +20,7 @@ export interface ButtonElement {
   label: string;
   actionType: ButtonType;
   targetKeys?: string[]; // Input keys this button will use/affect
-  serviceId?: number;
+  serviceIdToLoad?: number;
   serviceParams?: any[];
   responseMapping?: ResponseMapping[];
   resultType?: "array" | "object";

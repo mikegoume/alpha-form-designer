@@ -112,8 +112,6 @@ function TemplateFillForm() {
     setShowFormatModal(false);
   };
 
-  console.log("formValues: ", formValues, formConfig);
-
   return pdfUrl ? (
     <iframe
       src={pdfUrl}

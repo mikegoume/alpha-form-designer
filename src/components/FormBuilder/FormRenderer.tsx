@@ -84,7 +84,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setRows((prev) => [...prev, getDefaultRow()]);
   };
 
-  console.log(label, value);
+  // console.log(label, value);
 
   switch (type) {
     case FieldTypes.TEXT:

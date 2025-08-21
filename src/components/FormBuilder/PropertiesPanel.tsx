@@ -51,7 +51,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   element,
   onUpdateElement,
 }) => {
-  const { templateId, formVariables } = formConfig;
+  const { formVariables } = formConfig;
 
   const availableFormvariables = useMemo(() => {
     return formVariables.filter((fv) => fv.type !== "button");
@@ -92,8 +92,10 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   }, [endpoints, properties.serviceIdToLoad]);
 
   const selectedApiCallService = useMemo(() => {
-    return endpoints?.find((endpoint) => endpoint.id === properties.serviceId);
-  }, [endpoints, properties.serviceId]);
+    return endpoints?.find(
+      (endpoint) => endpoint.id === properties.serviceIdToLoad,
+    );
+  }, [endpoints, properties.serviceIdToLoad]);
 
   const handleTabValueChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -120,6 +122,23 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     const newColumns = currentColumns.filter((_, i) => i !== index);
     updateProperty("columns", newColumns);
   };
+
+  function updateRequestParameter(
+    params: any[],
+    index: number,
+    key: string,
+    newValue: string,
+  ) {
+    if (index < 0 || index > params.length) {
+      throw new Error("Index out of range");
+    }
+
+    // Copy array to avoid mutating original
+    const updatedParams = [...params];
+    updatedParams[index] = { ...updatedParams[index], [key]: newValue };
+
+    return updatedParams;
+  }
 
   const renderTypeSpecificProperties = () => {
     switch (properties.type) {
@@ -208,6 +227,18 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 value={properties.serviceIdToLoad ?? ""}
                 onChange={(e) => {
                   updateProperty("serviceIdToLoad", e.target.value);
+                  const endpoint = endpoints?.find(
+                    (en) => en.id === e.target.value,
+                  );
+
+                  const newRPs = properties.requestParameters;
+
+                  endpoint?.requestParameters.map((param) => {
+                    newRPs.push({
+                      origin: param.name,
+                    });
+                  });
+                  updateProperty("requestParameters", newRPs);
                 }}
                 fullWidth
               >
@@ -239,9 +270,24 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                         label="Type"
                         id="demo-simple-select-label"
                         value={
-                          properties.requestParameters?.[requestParamIndex]
-                            .type ?? ""
+                          properties?.requestParameters?.[requestParamIndex]
+                            ?.type ?? ""
                         }
+                        onChange={(e) => {
+                          const { requestParameters } = properties;
+
+                          console.log(requestParameters);
+
+                          updateProperty(
+                            "requestParameters",
+                            updateRequestParameter(
+                              requestParameters,
+                              requestParamIndex,
+                              "type",
+                              e.target.value,
+                            ),
+                          );
+                        }}
                         fullWidth
                       >
                         <MenuItem value={"hardcoded"}>Hardcoded</MenuItem>
@@ -256,9 +302,24 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                         label="Input Field"
                         id="demo-simple-select-label"
                         value={
-                          properties.requestParameters?.[requestParamIndex]
-                            .value ?? ""
+                          properties?.requestParameters?.[requestParamIndex]
+                            ?.value ?? ""
                         }
+                        onChange={(e) => {
+                          const { requestParameters } = properties;
+
+                          console.log(requestParameters);
+
+                          updateProperty(
+                            "requestParameters",
+                            updateRequestParameter(
+                              requestParameters,
+                              requestParamIndex,
+                              "value",
+                              e.target.value,
+                            ),
+                          );
+                        }}
                         fullWidth
                       >
                         {availableFormvariables.map((formVariable) => (
@@ -360,6 +421,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     }
   };
 
+  console.log(properties);
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div>
@@ -413,8 +476,10 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <Select
                   label="Service"
                   id="demo-simple-select-label"
-                  value={properties.serviceId ?? ""}
-                  onChange={(e) => updateProperty("serviceId", e.target.value)}
+                  value={properties.serviceIdToLoad ?? ""}
+                  onChange={(e) =>
+                    updateProperty("serviceIdToLoad", e.target.value)
+                  }
                   fullWidth
                 >
                   {endpoints?.map((endpoint: Endpoint) => (
@@ -457,7 +522,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                             id="demo-simple-select-label"
                             value={
                               properties.serviceParams?.[requestParamIndex]
-                                .type ?? ""
+                                ?.type ?? ""
                             }
                             fullWidth
                           >
