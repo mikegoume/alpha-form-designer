@@ -1,5 +1,10 @@
 import { NavLink } from "react-router";
-import { FileInput, FileText, Layout as LayoutIcon } from "lucide-react";
+import {
+  FileInput,
+  FileText,
+  Layout as LayoutIcon,
+  Settings,
+} from "lucide-react";
 
 function Sidebar() {
   return (
@@ -51,7 +56,7 @@ function Sidebar() {
             }`
           }
         >
-          <FileInput className="h-5 w-5" />
+          <Settings className="h-5 w-5" />
           Services
         </NavLink>
       </nav>

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router";
+import { CircularProgress } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchTemplates } from "../../api/templates";
@@ -24,10 +25,6 @@ function Templates() {
 
   const templates = templatesData?.data;
 
-  if (isLoading || !templates) {
-    return <p>Loading</p>;
-  }
-
   const renderTemplates = (templatesList: Template[]) => {
     return templatesList.map((template) => (
       <Link
@@ -46,9 +43,15 @@ function Templates() {
       {isAdmin && <TemplateUpload />}
       <div className="flex flex-col gap-8 px-8">
         <FilterComponent />
-        <div className="grid grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
-          {renderTemplates(templates)}
-        </div>
+        {isLoading || !templates ? (
+          <div className="flex flex-col pt-20 justify-center items-center">
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className="grid grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
+            {renderTemplates(templates)}
+          </div>
+        )}
       </div>
     </div>
   );

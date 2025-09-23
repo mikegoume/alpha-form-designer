@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Divider } from "@mui/material";
+import { CircularProgress, Divider } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
@@ -17,7 +17,7 @@ function Services() {
 
   const {
     data: templatesData,
-    isPending,
+    isLoading,
     error,
   } = useQuery({
     queryKey: ["services"],
@@ -26,7 +26,13 @@ function Services() {
 
   const templates = templatesData?.data;
 
-  if (!templates || !templatesData.data || isPending) return "Loading...";
+  if (!templates || isLoading) {
+    return (
+      <div className="flex flex-col flex-1 justify-center items-center">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   if (error) return "An error has occurred: " + error.message;
 

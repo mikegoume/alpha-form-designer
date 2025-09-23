@@ -1,4 +1,5 @@
 import { Link, To } from "react-router";
+import { CircularProgress } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchForms } from "../../api/forms";
@@ -16,7 +17,11 @@ function Forms() {
   const forms = formsData?.data;
 
   if (!forms || isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex flex-col flex-1 justify-center items-center">
+        <CircularProgress />
+      </div>
+    );
   }
 
   const renderForms = (formsList: Form[]) => {
