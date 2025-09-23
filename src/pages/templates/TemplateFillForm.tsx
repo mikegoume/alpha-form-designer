@@ -1,13 +1,15 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 import {
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  FormControlLabel,
   InputLabel,
   ListItemText,
   MenuItem,
@@ -34,7 +36,10 @@ function TemplateFillForm() {
   const [formValues, setFormValues] = useState<FormValues>({});
   const [selectedFormId, setSelectedFormId] = useState<number | string>("");
   const [showFormatModal, setShowFormatModal] = useState(false);
+  const [showLockModal, setShowLockModal] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
+  const [isLocked, setIsLocked] = useState<boolean>(false);
+  const [generatedBlob, setGeneratedBlob] = useState<Blob | null>(null);
 
   const generateDoc = useMutation({
     mutationKey: [id],
@@ -46,24 +51,33 @@ function TemplateFillForm() {
             ? "application/pdf"
             : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       });
+      setGeneratedBlob(blob);
 
       if (selectedFormat === "PDF") {
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
-      } else if (selectedFormat === "DOCX" && docxContainerRef.current) {
-        // Clear previous content
-        docxContainerRef.current.innerHTML = "";
-        await renderAsync(blob, docxContainerRef.current, undefined, {
-          inWrapper: true,
-          ignoreWidth: false,
-          ignoreHeight: false,
-          className: "docx-preview",
-        });
       }
 
       setShowFormatModal(false);
+      setShowLockModal(false);
     },
   });
+
+  // Render DOCX once blob and container are ready
+  useEffect(() => {
+    if (
+      selectedFormat === "DOCX" &&
+      generatedBlob &&
+      docxContainerRef.current
+    ) {
+      docxContainerRef.current.innerHTML = "";
+      renderAsync(generatedBlob, docxContainerRef.current, undefined, {
+        inWrapper: false,
+        ignoreWidth: false,
+        ignoreHeight: false,
+      });
+    }
+  }, [selectedFormat, generatedBlob]);
 
   const { data: templatesData } = useQuery({
     queryKey: ["templates", id],
@@ -83,7 +97,6 @@ function TemplateFillForm() {
 
   const formConfig = useMemo(() => {
     if (!selectedForm) return;
-
     return JSON.parse(selectedForm.json);
   }, [selectedForm]);
 
@@ -98,34 +111,82 @@ function TemplateFillForm() {
       selectedFormat,
       formConfig,
       formValues,
-      true,
+      isLocked,
     );
     generateDoc.mutate(dataToSend);
   };
 
   const handleFormatSelect = (format: string) => {
     setSelectedFormat(format);
+    if (format === "DOCX") {
+      setShowLockModal(true);
+    } else {
+      setShowFormatModal(false);
+      handleSubmit();
+    }
+  };
+
+  const handleLockSelect = (locked: boolean) => {
+    setIsLocked(locked);
+    setShowLockModal(false);
     handleSubmit();
   };
 
   const handleCloseModal = () => {
     setShowFormatModal(false);
+    setShowLockModal(false);
   };
 
-  return pdfUrl ? (
-    <iframe
-      src={pdfUrl}
-      title={`${selectedFormat} Preview`}
-      width="100%"
-      height="100%"
-      style={{ border: "none" }}
-    />
-  ) : (
+  const handleDownload = () => {
+    if (!generatedBlob || !selectedFormat) return;
+    const url = URL.createObjectURL(generatedBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = selectedFormat === "PDF" ? "document.pdf" : "document.docx";
+    link.click();
+  };
+
+  // Full screen preview
+  if (pdfUrl || (selectedFormat === "DOCX" && generatedBlob)) {
+    return (
+      <div className="w-full h-full flex flex-col">
+        {/* Header with Download button */}
+        <FilledTemplateHeader
+          showDownloadButton={!!generatedBlob}
+          onDownloadClick={handleDownload}
+        />
+
+        {/* Preview area */}
+        <div className="w-full h-full bg-black/60 flex flex-col items-center justify-center">
+          {selectedFormat === "PDF" && pdfUrl && (
+            <iframe
+              src={pdfUrl}
+              title="PDF Preview"
+              width="100%"
+              height="100%"
+              style={{ border: "none" }}
+            />
+          )}
+          {selectedFormat === "DOCX" && (
+            <div
+              ref={docxContainerRef}
+              className="overflow-y-auto min-w-2xl bg-white shadow-xl rounded-lg"
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
     selectedTemplate && (
       <>
-        <FilledTemplateHeader showDownloadButton={false} />
+        <FilledTemplateHeader
+          showDownloadButton={!!generatedBlob}
+          onDownloadClick={handleDownload}
+        />
         <div className="flex flex-col flex-1 items-center gap-6 p-4 bg-neutral-100">
-          {selectedTemplate.forms.length > 1 && (
+          {selectedTemplate.forms.length > 0 && (
             <FormControl
               sx={{ width: "100%", backgroundColor: "white", maxWidth: 500 }}
             >
@@ -163,6 +224,7 @@ function TemplateFillForm() {
             )}
           </div>
         </div>
+
         {/* Format Selection Modal */}
         <Dialog
           open={showFormatModal}
@@ -178,7 +240,7 @@ function TemplateFillForm() {
           </DialogTitle>
           <DialogContent>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              Choose the format you want to download your document in:
+              Choose the format you want to generate your document in:
             </Typography>
             <Box display="flex" gap={2}>
               <Button
@@ -222,6 +284,73 @@ function TemplateFillForm() {
           <DialogActions>
             <Button onClick={handleCloseModal} color="inherit">
               Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Lock Selection Modal */}
+        <Dialog
+          open={showLockModal && selectedFormat === "DOCX"}
+          onClose={() => setShowLockModal(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Download className="h-5 w-5" />
+              <Typography variant="h6">DOCX Download Options</Typography>
+            </Box>
+          </DialogTitle>
+
+          <DialogContent>
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              Configure your DOCX document options:
+            </Typography>
+
+            <Box
+              sx={{
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                p: 2,
+                backgroundColor: "#fafafa",
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isLocked}
+                    onChange={(e) => setIsLocked(e.target.checked)}
+                  />
+                }
+                label={
+                  <Typography fontWeight={600}>
+                    Lock document for editing
+                  </Typography>
+                }
+              />
+              <Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>
+                When enabled, the document will be protected from modifications
+              </Typography>
+            </Box>
+          </DialogContent>
+
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setShowLockModal(false);
+                setShowFormatModal(true); // go back
+              }}
+              color="inherit"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={() => handleLockSelect(isLocked)}
+              variant="contained"
+              color="primary"
+              startIcon={<Download />}
+            >
+              Download DOCX
             </Button>
           </DialogActions>
         </Dialog>

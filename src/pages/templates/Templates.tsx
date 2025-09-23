@@ -46,7 +46,7 @@ function Templates() {
       {isAdmin && <TemplateUpload />}
       <div className="flex flex-col gap-8 px-8">
         <FilterComponent />
-        <div className="grid grid-cols-10 gap-2">
+        <div className="grid grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
           {renderTemplates(templates)}
         </div>
       </div>

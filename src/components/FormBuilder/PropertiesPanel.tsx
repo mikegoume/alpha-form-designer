@@ -78,6 +78,12 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     }
   }, [element]);
 
+  const selectedApiCallService = useMemo(() => {
+    return endpoints?.find(
+      (endpoint) => endpoint.id === properties.serviceIdToLoad,
+    );
+  }, [endpoints, properties.serviceIdToLoad]);
+
   const updateProperty = (key: keyof FormInputElementType, value: any) => {
     setProperties((prev) => {
       onUpdateElement({ ...prev, [key]: value });
@@ -85,17 +91,34 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     });
   };
 
-  const selectedEndpoint = useMemo(() => {
-    return endpoints?.find(
-      (endpoint) => endpoint.id === properties.serviceIdToLoad,
-    );
-  }, [endpoints, properties.serviceIdToLoad]);
-
-  const selectedApiCallService = useMemo(() => {
-    return endpoints?.find(
-      (endpoint) => endpoint.id === properties.serviceIdToLoad,
-    );
-  }, [endpoints, properties.serviceIdToLoad]);
+  // useEffect(() => {
+  //   if (
+  //     selectedApiCallService?.id &&
+  //     selectedApiCallService.requestParameters.length !==
+  //       properties.serviceParams?.length
+  //   ) {
+  //     console.log(
+  //       "useEffect: ",
+  //       selectedApiCallService?.requestParameters.map((reqParam) => ({
+  //         type: "input_key",
+  //         value: reqParam.name,
+  //       })),
+  //     );
+  //     updateProperty(
+  //       "serviceParams",
+  //       selectedApiCallService?.requestParameters.map((reqParam) => ({
+  //         type: "input_key",
+  //         value: reqParam.name,
+  //       })),
+  //     );
+  //   }
+  // }, [
+  //   properties.serviceIdToLoad,
+  //   properties.serviceParams?.length,
+  //   selectedApiCallService?.id,
+  //   selectedApiCallService?.requestParameters,
+  //   updateProperty,
+  // ]);
 
   const handleTabValueChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -254,7 +277,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 ))}
               </Select>
             </FormControl>
-            {selectedEndpoint?.requestParameters.map(
+            {selectedApiCallService?.requestParameters.map(
               (requestParam, requestParamIndex) => (
                 <div
                   key={requestParam.id}
@@ -276,7 +299,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                         onChange={(e) => {
                           const { requestParameters } = properties;
 
-                          console.log(requestParameters);
+                          // console.log(requestParameters);
 
                           updateProperty(
                             "requestParameters",
@@ -421,7 +444,10 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     }
   };
 
-  console.log(properties);
+  console.log("element: ", element);
+  console.log("properties: ", properties);
+
+  // console.log("selectedApiCallService: ", selectedApiCallService);
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -494,16 +520,18 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   ))}
                 </Select>
               </FormControl>
-              <Box>
-                <Tabs
-                  value={tabValue}
-                  onChange={handleTabValueChange}
-                  aria-label="basic tabs example"
-                >
-                  <Tab label="Service Parameters" {...a11yProps(0)} />
-                  <Tab label="Response Mapping" {...a11yProps(1)} />
-                </Tabs>
-              </Box>
+              {properties.serviceIdToLoad && (
+                <Box>
+                  <Tabs
+                    value={tabValue}
+                    onChange={handleTabValueChange}
+                    aria-label="basic tabs example"
+                  >
+                    <Tab label="Service Parameters" {...a11yProps(0)} />
+                    <Tab label="Response Mapping" {...a11yProps(1)} />
+                  </Tabs>
+                </Box>
+              )}
               <CustomTabPanel value={tabValue} index={0}>
                 {selectedApiCallService?.requestParameters.map(
                   (requestParam, requestParamIndex) => (
@@ -524,6 +552,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                               properties.serviceParams?.[requestParamIndex]
                                 ?.type ?? ""
                             }
+                            onChange={(element) => {
+                              console.log(element.target.value);
+                            }}
                             fullWidth
                           >
                             <MenuItem value={"hardcoded"}>Hardcoded</MenuItem>
@@ -539,8 +570,11 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                             id="demo-simple-select-label"
                             value={
                               properties.serviceParams?.[requestParamIndex]
-                                .value ?? ""
+                                ?.value ?? ""
                             }
+                            onChange={(element) => {
+                              console.log(element);
+                            }}
                             fullWidth
                           >
                             {availableFormvariables.map((formVariable) => (
@@ -579,7 +613,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                             id="demo-simple-select-label"
                             value={
                               properties.responseMapping?.[responsePathIndex]
-                                .targetInput ?? ""
+                                ?.targetInput ?? ""
                             }
                             fullWidth
                           >

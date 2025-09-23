@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { renderAsync } from "docx-preview";
-import { motion } from "framer-motion";
 
 import { Template } from "../../types/templates";
 
@@ -36,19 +35,21 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document }) => {
         return;
       }
 
-      renderAsync(arrayBuffer, contentRef.current);
+      renderAsync(arrayBuffer, contentRef.current, undefined, {
+        inWrapper: false,
+        ignoreWidth: false,
+        ignoreHeight: false,
+      });
     }
   }, [document.data]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.2 }}
-      className="bg-white rounded-lg shadow-apple overflow-hidden flex flex-col h-full"
-    >
-      <div ref={contentRef} className="overflow-auto" />
-    </motion.div>
+    <div className="w-full h-full bg-black/60 flex flex-col items-center justify-center rounded-lg">
+      <div
+        ref={contentRef}
+        className="overflow-y-auto min-w-2xl bg-white shadow-xl rounded-lg"
+      />
+    </div>
   );
 };
 

@@ -51,6 +51,7 @@ function MetadataManager({
         <Controller
           name="fileName"
           control={control}
+          disabled={!showUpdateMetadataButton}
           render={({ field }) => (
             <TextField
               {...field}
@@ -65,6 +66,7 @@ function MetadataManager({
         <Controller
           name="description"
           control={control}
+          disabled={!showUpdateMetadataButton}
           render={({ field }) => (
             <TextField
               {...field}
@@ -80,6 +82,7 @@ function MetadataManager({
         <Controller
           name="tags"
           control={control}
+          disabled={!showUpdateMetadataButton}
           render={({ field }) => (
             <TextField
               {...field}

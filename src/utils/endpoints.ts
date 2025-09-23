@@ -39,7 +39,7 @@ export function mapRequestParamsToValues(
 
   for (const param of requestParameters) {
     if (param.type === "input_key") {
-      const formVar = formDefinition.formVariables.find(
+      const formVar = formDefinition?.formVariables?.find(
         (v) => (v as FormInputElementType).name === param.value,
       );
       if (formVar) {
