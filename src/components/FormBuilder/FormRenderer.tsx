@@ -125,7 +125,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
           <Table>
             <TableHead>
               <TableRow>
-                {columns.map((col) => (
+                {columns?.map((col) => (
                   <TableCell key={col.name}>{col.value}</TableCell>
                 ))}
               </TableRow>
@@ -133,7 +133,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
             <TableBody>
               {rows?.map((row) => (
                 <TableRow key={row.id}>
-                  {columns.map((col) => {
+                  {columns?.map((col) => {
                     const value = row[col.name];
 
                     return (

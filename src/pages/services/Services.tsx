@@ -55,7 +55,7 @@ function Services() {
         key={template.id}
         className="flex flex-col relative w-full sm:w-40 h-40"
       >
-        <FileItem label={template.name} />
+        <FileItem label={template.name} isService />
       </button>
     ));
   };

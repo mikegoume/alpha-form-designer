@@ -8,13 +8,12 @@ import {
 
 function Sidebar() {
   return (
-    <aside className="w-64 bg-white border-r border-neutral-200">
-      <div className="p-4 ">
+    <aside className="w-80 bg-gradient-to-b from-[#0a294f] to-[#11366b] border-r border-neutral-200">
+      {/* <aside className="w-80 bg-gradient-to-b from-[#0a294f] to-[#11366b] border-r border-neutral-200"> */}
+      <div className="p-6">
         <div className="flex items-center gap-2">
-          <FileText className="text-primary-500 h-6 w-6" />
-          <h1 className="text-xl font-semibold text-neutral-800">
-            Forms Designer
-          </h1>
+          <FileText className="text-white size-6" />
+          <h1 className="text-xl font-semibold text-white">Forms Designer</h1>
         </div>
       </div>
 
@@ -24,8 +23,8 @@ function Sidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
               isActive
-                ? "bg-primary-50 text-primary-500"
-                : "text-neutral-600 hover:bg-neutral-50"
+                ? "bg-white/20 text-white"
+                : "text-white/40 hover:bg-white/5"
             }`
           }
         >
@@ -38,8 +37,8 @@ function Sidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
               isActive
-                ? "bg-primary-50 text-primary-500"
-                : "text-neutral-600 hover:bg-neutral-50"
+                ? "bg-white/20 text-white"
+                : "text-white/40 hover:bg-white/5"
             }`
           }
         >
@@ -51,8 +50,8 @@ function Sidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
               isActive
-                ? "bg-primary-50 text-primary-500"
-                : "text-neutral-600 hover:bg-neutral-50"
+                ? "bg-white/20 text-white"
+                : "text-white/40 hover:bg-white/5"
             }`
           }
         >

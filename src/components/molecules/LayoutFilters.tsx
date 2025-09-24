@@ -58,6 +58,7 @@ export default function FilterComponent() {
         InputProps={{
           startAdornment: <Search className="mr-2" />,
         }}
+        className=""
       />
 
       {/* Title Tags Dropdown */}

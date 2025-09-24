@@ -16,13 +16,13 @@ function Forms() {
 
   const forms = formsData?.data;
 
-  if (!forms || isLoading) {
-    return (
-      <div className="flex flex-col flex-1 justify-center items-center">
-        <CircularProgress />
-      </div>
-    );
-  }
+  // if (!forms || isLoading) {
+  //   return (
+  //     <div className="flex flex-col flex-1 justify-center items-center">
+  //       <CircularProgress />
+  //     </div>
+  //   );
+  // }
 
   const renderForms = (formsList: Form[]) => {
     return formsList.map((template: Form) => (
@@ -39,11 +39,17 @@ function Forms() {
   return (
     <div className="min-h-screen bg-gray-50">
       <FormsHeader />
-      <div className="flex flex-1 flex-col gap-8 bg-gray-50 p-8 overflow-auto">
+      <div className="flex flex-1 flex-col gap-8 p-8 overflow-auto">
         <FilterComponent />
-        <div className="flex flex-col overflow-y-auto">
-          <div className="grid grid-cols-10 gap-2">{renderForms(forms)}</div>
-        </div>
+        {isLoading ? (
+          <div className="flex flex-col flex-1 justify-center items-center">
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className="flex flex-col overflow-y-auto">
+            <div className="grid grid-cols-10 gap-2">{renderForms(forms)}</div>
+          </div>
+        )}
       </div>
     </div>
   );
