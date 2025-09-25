@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useNavigate } from "react-router";
 
 interface User {
   id: string;
@@ -31,7 +32,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const navigate = useNavigate();
   // Load user data from localStorage on app start
   useEffect(() => {
     const savedUser = localStorage.getItem("adminPanelUser");
@@ -77,6 +78,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(updatedUser);
       console.log("updated user: ", updatedUser);
       localStorage.setItem("adminPanelUser", JSON.stringify(updatedUser));
+
+      // Navigate to /forms
+      if (!updatedUser.isAdmin) {
+        navigate("/forms");
+      }
     }
   };
 

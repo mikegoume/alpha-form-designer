@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,11 +25,18 @@ import { DocumentTemplate, generateDocument } from "../../api/endpoints";
 import { fetchTemplates } from "../../api/templates";
 import FormPreview from "../../components/FormBuilder/FormPreview";
 import FilledTemplateHeader from "../../components/molecules/FilledTemplateHeader";
+import { useAuth } from "../../contexts/AuthContext";
 import { Form, FormValues } from "../../types/form";
 import { prepareDataToGenerateDocument } from "../../utils/documentUtils";
 
 function TemplateFillForm() {
+  const location = useLocation();
   const { id } = useParams();
+  const {
+    user: { isAdmin },
+  } = useAuth();
+
+  const { formId } = location.state || {};
 
   const docxContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -40,11 +48,16 @@ function TemplateFillForm() {
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [generatedBlob, setGeneratedBlob] = useState<Blob | null>(null);
+  const [showLoading, setShowLoading] = useState(false);
 
   const generateDoc = useMutation({
     mutationKey: [id],
-    mutationFn: (data: DocumentTemplate) => generateDocument(data),
+    mutationFn: (data: DocumentTemplate) => {
+      setShowLoading(true);
+      return generateDocument(data); // ✅ return promise
+    },
     onSuccess: async (data) => {
+      setShowLoading(false);
       const blob = new Blob([data], {
         type:
           selectedFormat === "PDF"
@@ -58,8 +71,12 @@ function TemplateFillForm() {
         setPdfUrl(url);
       }
 
+      // ✅ Close modals after success
       setShowFormatModal(false);
       setShowLockModal(false);
+    },
+    onError: () => {
+      setShowLoading(false);
     },
   });
 
@@ -78,6 +95,12 @@ function TemplateFillForm() {
       });
     }
   }, [selectedFormat, generatedBlob]);
+
+  useEffect(() => {
+    if (!isAdmin && formId) {
+      setSelectedFormId(formId);
+    }
+  }, [formId, isAdmin]);
 
   const { data: templatesData } = useQuery({
     queryKey: ["templates", id],
@@ -121,18 +144,17 @@ function TemplateFillForm() {
     if (format === "DOCX") {
       setShowLockModal(true);
     } else {
-      setShowFormatModal(false);
-      handleSubmit();
+      handleSubmit(); // ✅ don’t close modal early
     }
   };
 
   const handleLockSelect = (locked: boolean) => {
     setIsLocked(locked);
-    setShowLockModal(false);
     handleSubmit();
   };
 
   const handleCloseModal = () => {
+    if (showLoading) return; // ✅ prevent closing while loading
     setShowFormatModal(false);
     setShowLockModal(false);
   };
@@ -150,13 +172,10 @@ function TemplateFillForm() {
   if (pdfUrl || (selectedFormat === "DOCX" && generatedBlob)) {
     return (
       <div className="w-full h-full flex flex-col">
-        {/* Header with Download button */}
         <FilledTemplateHeader
-          showDownloadButton={!!generatedBlob}
+          showDownloadButton={!!generatedBlob && selectedFormat === "DOCX"}
           onDownloadClick={handleDownload}
         />
-
-        {/* Preview area */}
         <div className="w-full h-full bg-black/60 flex flex-col items-center justify-center">
           {selectedFormat === "PDF" && pdfUrl && (
             <iframe
@@ -182,11 +201,11 @@ function TemplateFillForm() {
     selectedTemplate && (
       <>
         <FilledTemplateHeader
-          showDownloadButton={!!generatedBlob}
+          showDownloadButton={!!generatedBlob && selectedFormat === "DOCX"}
           onDownloadClick={handleDownload}
         />
         <div className="flex flex-col flex-1 items-center gap-6 p-4 bg-neutral-100">
-          {selectedTemplate.forms.length > 0 && (
+          {selectedTemplate.forms.length > 0 && isAdmin && (
             <FormControl
               sx={{ width: "100%", backgroundColor: "white", maxWidth: 500 }}
             >
@@ -248,7 +267,13 @@ function TemplateFillForm() {
                 fullWidth
                 size="large"
                 onClick={() => handleFormatSelect("PDF")}
-                startIcon={<FileText className="h-5 w-5" />}
+                startIcon={
+                  showLoading && selectedFormat === "PDF" ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <FileText className="h-5 w-5" />
+                  )
+                }
                 sx={{
                   py: 2,
                   borderColor: "#d32f2f",
@@ -258,15 +283,24 @@ function TemplateFillForm() {
                     backgroundColor: "rgba(211, 47, 47, 0.04)",
                   },
                 }}
+                disabled={showLoading}
               >
-                PDF Format
+                {showLoading && selectedFormat === "PDF"
+                  ? "Generating..."
+                  : "PDF Format"}
               </Button>
               <Button
                 variant="outlined"
                 fullWidth
                 size="large"
                 onClick={() => handleFormatSelect("DOCX")}
-                startIcon={<FileText className="h-5 w-5" />}
+                startIcon={
+                  showLoading && selectedFormat === "DOCX" ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <FileText className="h-5 w-5" />
+                  )
+                }
                 sx={{
                   py: 2,
                   borderColor: "#1976d2",
@@ -276,13 +310,20 @@ function TemplateFillForm() {
                     backgroundColor: "rgba(25, 118, 210, 0.04)",
                   },
                 }}
+                disabled={showLoading}
               >
-                DOCX Format
+                {showLoading && selectedFormat === "DOCX"
+                  ? "Generating..."
+                  : "DOCX Format"}
               </Button>
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseModal} color="inherit">
+            <Button
+              onClick={handleCloseModal}
+              color="inherit"
+              disabled={showLoading}
+            >
               Cancel
             </Button>
           </DialogActions>
@@ -291,7 +332,7 @@ function TemplateFillForm() {
         {/* Lock Selection Modal */}
         <Dialog
           open={showLockModal && selectedFormat === "DOCX"}
-          onClose={() => setShowLockModal(false)}
+          onClose={handleCloseModal}
           maxWidth="sm"
           fullWidth
         >
@@ -341,6 +382,7 @@ function TemplateFillForm() {
                 setShowFormatModal(true); // go back
               }}
               color="inherit"
+              disabled={showLoading}
             >
               Back
             </Button>
@@ -348,9 +390,16 @@ function TemplateFillForm() {
               onClick={() => handleLockSelect(isLocked)}
               variant="contained"
               color="primary"
-              startIcon={<Download />}
+              startIcon={
+                showLoading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <Download />
+                )
+              }
+              disabled={showLoading}
             >
-              Download DOCX
+              {showLoading ? "Generating..." : "Download DOCX"}
             </Button>
           </DialogActions>
         </Dialog>

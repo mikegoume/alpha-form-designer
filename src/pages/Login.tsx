@@ -61,7 +61,7 @@ function Login() {
       uid: uuidv4(),
     };
 
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("adminPanelUser", JSON.stringify(userData));
     login({ ...userData, id: Date.now().toString() });
     navigate("/templates");
   };

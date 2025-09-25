@@ -53,9 +53,6 @@ const FormBuilder: React.FC = () => {
   const [previewMode, setPreviewMode] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({});
 
-  // console.log("formConfig: ", formConfig);
-  // console.log("formValues: ", formValues);
-
   const { data: formData, isLoading: isFormsLoading } = useQuery({
     queryKey: ["form", id],
     queryFn: () => fetchForm(Number(id)),

@@ -2,8 +2,14 @@ import { useNavigate } from "react-router";
 import { Button, Typography } from "@mui/material";
 import { Plus } from "lucide-react";
 
+import { useAuth } from "../../contexts/AuthContext";
+
 function FormsHeader() {
   const navigate = useNavigate();
+
+  const {
+    user: { isAdmin },
+  } = useAuth();
 
   const handleCreatePress = () => {
     navigate("create");
@@ -23,14 +29,16 @@ function FormsHeader() {
             Manage your forms
           </Typography>
         </div>
-        <Button
-          variant="contained"
-          className="bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
-          onClick={handleCreatePress}
-        >
-          <Plus className="h-4 w-4" />
-          Create Form
-        </Button>
+        {isAdmin && (
+          <Button
+            variant="contained"
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
+            onClick={handleCreatePress}
+          >
+            <Plus className="h-4 w-4" />
+            Create Form
+          </Button>
+        )}
       </div>
     </div>
   );
