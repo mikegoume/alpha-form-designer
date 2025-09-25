@@ -67,7 +67,7 @@ function Services() {
         <div className="flex flex-1 flex-col gap-8 bg-gray-50 p-8 overflow-auto">
           <FilterComponent />
           <div className="flex flex-col overflow-y-auto">
-            <div className="grid grid-cols-10 gap-2">
+            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] place-items-center">
               {renderTemplates(templates)}
             </div>
           </div>

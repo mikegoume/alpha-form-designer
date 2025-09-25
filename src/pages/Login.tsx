@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as z from "zod/v4";
 
 import LoginImage from "../../assets/login2.png";
-import AuthContext from "../contexts/auth/authContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const schema = z.object({
   email: z.email("Invalid email"),
@@ -26,7 +26,7 @@ export type LoginInputs = z.infer<typeof schema>;
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const { setUser } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -54,15 +54,15 @@ function Login() {
 
   const onSubmit = (data: LoginInputs) => {
     const userData = {
-      username: data.email,
+      name: data.email,
       email: data.email,
       lastLogin: new Date().toISOString(),
-      userType: "admin",
+      isAdmin: true,
       uid: uuidv4(),
     };
 
     localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+    login({ ...userData, id: Date.now().toString() });
     navigate("/templates");
   };
 

@@ -7,7 +7,7 @@ import { fetchTemplates } from "../../api/templates";
 import FileItem from "../../components/atoms/FileItem";
 import FilterComponent from "../../components/molecules/LayoutFilters";
 import TemplatesHeader from "../../components/molecules/TemplatesHeader";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../contexts/AuthContext";
 import { Template } from "../../types/templates";
 import TemplateUpload from "./TemplateUpload";
 
@@ -30,7 +30,7 @@ function Templates() {
       <Link
         to={`${template.id}`}
         key={template.id}
-        className="flex flex-col relative w-full sm:w-40 h-40"
+        className="flex flex-col items-center relative w-full sm:size-40 hover:cursor-pointer"
       >
         <FileItem label={template.name} />
       </Link>
@@ -41,14 +41,14 @@ function Templates() {
     <div className="min-h-screen bg-gray-50">
       <TemplatesHeader />
       {isAdmin && <TemplateUpload />}
-      <div className="flex flex-col gap-8 px-8">
+      <div className="flex flex-col gap-8 p-8">
         <FilterComponent />
         {isLoading || !templates ? (
           <div className="flex flex-col pt-20 justify-center items-center">
             <CircularProgress />
           </div>
         ) : (
-          <div className="grid grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
+          <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] place-items-center">
             {renderTemplates(templates)}
           </div>
         )}

@@ -1,7 +1,7 @@
-export type User = {
-  uid: string;
+export interface User {
+  id: string;
+  name: string;
   email: string;
-  username: string;
-  lastLogin: string;
-  userType: string;
-};
+  avatar?: string;
+  isAdmin: boolean;
+}

@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { Avatar, Badge, badgeClasses, IconButton, styled } from "@mui/material";
+import {
+  Avatar,
+  Badge,
+  badgeClasses,
+  FormControlLabel,
+  IconButton,
+  styled,
+  Switch,
+  Typography,
+} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Bell, LogOut, Settings } from "lucide-react";
+import { Bell, LogOut, Settings, Settings2 } from "lucide-react";
 
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../contexts/AuthContext";
 
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
@@ -16,9 +25,23 @@ const CartBadge = styled(Badge)`
 `;
 
 function ApplicationHeader() {
-  const { username } = useAuth().user;
-
+  const { user, logout, toggleAdminRole } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
+  };
+
+  const handleAdminToggle = () => {
+    toggleAdminRole();
+  };
+
+  if (!user) return null;
 
   const open = Boolean(anchorEl);
 
@@ -57,7 +80,7 @@ function ApplicationHeader() {
           }}
         >
           <Avatar
-            alt={username}
+            alt={user.name}
             src="/static/images/avatar/1.jpg"
             sx={{ width: 36, height: 36 }}
           />
@@ -110,7 +133,45 @@ function ApplicationHeader() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <Divider />
+        <MenuItem>
+          <ListItemIcon>
+            <Settings2 fontSize="small" />
+          </ListItemIcon>
+          Administrator Mode
+          <FormControlLabel
+            control={
+              <Switch
+                checked={user.isAdmin}
+                onChange={handleAdminToggle}
+                color="primary"
+                size="small"
+              />
+            }
+            label={""}
+            sx={{
+              m: 0,
+              width: "100%",
+              "& .MuiFormControlLabel-label": {
+                flex: 1,
+              },
+              "& .MuiSwitch-root": {
+                ml: "auto",
+              },
+            }}
+          />
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block", mt: 0.5 }}
+          >
+            {user.isAdmin
+              ? "Full access to all features"
+              : "Limited user permissions"}
+          </Typography>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <LogOut fontSize="small" />
           </ListItemIcon>

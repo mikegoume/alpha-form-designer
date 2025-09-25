@@ -16,14 +16,6 @@ function Forms() {
 
   const forms = formsData?.data;
 
-  // if (!forms || isLoading) {
-  //   return (
-  //     <div className="flex flex-col flex-1 justify-center items-center">
-  //       <CircularProgress />
-  //     </div>
-  //   );
-  // }
-
   const renderForms = (formsList: Form[]) => {
     return formsList.map((template: Form) => (
       <Link
@@ -41,13 +33,15 @@ function Forms() {
       <FormsHeader />
       <div className="flex flex-1 flex-col gap-8 p-8 overflow-auto">
         <FilterComponent />
-        {isLoading ? (
+        {isLoading || !forms ? (
           <div className="flex flex-col flex-1 justify-center items-center">
             <CircularProgress />
           </div>
         ) : (
           <div className="flex flex-col overflow-y-auto">
-            <div className="grid grid-cols-10 gap-2">{renderForms(forms)}</div>
+            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] place-items-center">
+              {renderForms(forms)}
+            </div>
           </div>
         )}
       </div>
