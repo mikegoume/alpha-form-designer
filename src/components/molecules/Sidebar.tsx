@@ -1,11 +1,7 @@
-import { Link, NavLink } from "react-router";
-import {
-  FileInput,
-  FileText,
-  Layout as LayoutIcon,
-  Settings,
-} from "lucide-react";
+import { NavLink } from "react-router";
+import { FileInput, Layout as LayoutIcon, Settings } from "lucide-react";
 
+import MyIcon from "../../../assets/Frame2.png";
 import { useAuth } from "../../contexts/AuthContext";
 
 function Sidebar() {
@@ -16,7 +12,7 @@ function Sidebar() {
   return (
     <aside className="w-80 bg-gradient-to-b from-[#0a294f] to-[#11366b]">
       {/* <aside className="w-80 bg-gradient-to-b from-[#0a294f] to-[#11366b] border-r border-neutral-200"> */}
-      <div className="p-6">
+      {/* <div className="p-6">
         <div className="flex items-center gap-2">
           <FileText className="text-white size-12" />
           <Link to={"/login"}>
@@ -24,7 +20,8 @@ function Sidebar() {
             <h2 className="text-xl font-semibold text-white">Forms Designer</h2>
           </Link>
         </div>
-      </div>
+      </div> */}
+      <img src={MyIcon} alt="Description" className="p-4 h-[100px]" />
 
       <nav className="p-4 space-y-2">
         {!isAdmin ? (

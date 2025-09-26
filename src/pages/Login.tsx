@@ -13,7 +13,7 @@ import { Eye, EyeOff, Mail } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import * as z from "zod";
 
-import LoginImage from "../../assets/login2.png";
+import LoginImage from "../../assets/LoginScreen.png";
 import { useAuth } from "../contexts/AuthContext";
 
 const schema = z.object({
@@ -67,7 +67,7 @@ function Login() {
   };
 
   return (
-    <div className="w-full h-[100vh] flex flex-1 bg-primary-100 p-4">
+    <div className="w-full h-[100vh] flex flex-1 bg-[#e3f5ff] p-4">
       <div className="w-2/5 h-full flex items-center justify-center bg-white rounded-2xl">
         <form
           onSubmit={handleSubmit(onSubmit)}
