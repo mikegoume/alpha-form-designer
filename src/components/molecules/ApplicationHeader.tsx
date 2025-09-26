@@ -3,7 +3,6 @@ import {
   Avatar,
   Badge,
   badgeClasses,
-  FormControlLabel,
   IconButton,
   styled,
   Switch,
@@ -134,41 +133,28 @@ function ApplicationHeader() {
           Settings
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem className="flex flex-row" sx={{ alignItems: "flex-start" }}>
           <ListItemIcon>
             <Settings2 fontSize="small" />
           </ListItemIcon>
-          Administrator Mode
-          <FormControlLabel
-            control={
-              <Switch
-                checked={user.isAdmin}
-                onChange={handleAdminToggle}
-                color="primary"
-                size="small"
-              />
-            }
-            label={""}
-            sx={{
-              m: 0,
-              width: "100%",
-              "& .MuiFormControlLabel-label": {
-                flex: 1,
-              },
-              "& .MuiSwitch-root": {
-                ml: "auto",
-              },
-            }}
+          <div className="flex flex-col mr-10">
+            Administrator Mode
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", mt: 0.5 }}
+            >
+              {user.isAdmin
+                ? "Full access to all features"
+                : "Limited user permissions"}
+            </Typography>
+          </div>
+          <Switch
+            checked={user.isAdmin}
+            onChange={handleAdminToggle}
+            color="primary"
+            size="small"
           />
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: "block", mt: 0.5 }}
-          >
-            {user.isAdmin
-              ? "Full access to all features"
-              : "Limited user permissions"}
-          </Typography>
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>

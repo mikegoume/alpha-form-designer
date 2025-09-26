@@ -21,9 +21,7 @@ function FileItem(properties: FileItemProperties) {
   }
 
   return (
-    <div
-      className={`flex flex-col items-center gap-2 max-w-[${isService ? "120px" : "120px"}]`}
-    >
+    <div className={`flex flex-col items-center gap-2 max-w-[100px}]`}>
       <div className="flex flex-auto items-center justify-center relative">
         {/* <StatusBadge status="published" /> */}
         <img

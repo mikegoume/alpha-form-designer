@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { CircularProgress, Divider } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,52 +12,52 @@ import ServicesHeader from "../../components/molecules/ServicesHeader";
 import { Endpoint } from "../../types/endpoints";
 
 function Services() {
+  const navigate = useNavigate();
+  const { serviceId } = useParams();
+
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
     null,
   );
 
   const {
-    data: templatesData,
+    data: servicesData,
     isLoading,
+    isError,
     error,
   } = useQuery({
     queryKey: ["services"],
     queryFn: fetchEndpoints,
+    retry: 5, // retry up to 5 times
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000), // exponential backoff (max 30s)
   });
 
-  const templates = templatesData?.data;
+  const services = servicesData?.data;
 
-  if (!templates || isLoading) {
-    return (
-      <div className="flex flex-col flex-1 justify-center items-center">
-        <CircularProgress />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (serviceId) {
+      setSelectedTemplateId(parseInt(serviceId, 10));
+    } else {
+      setSelectedTemplateId(null);
+    }
+  }, [serviceId]);
 
-  if (error) return "An error has occurred: " + error.message;
-
-  const selectedTemplate = templates?.find(
+  const selectedTemplate = services?.find(
     (template) => template.id === selectedTemplateId,
   );
 
-  const handleTemplateClick = (template: Endpoint) => {
-    setSelectedTemplateId(template.id);
-  };
-
   const handleCloseSidebar = () => {
-    setSelectedTemplateId(null);
+    navigate(-1);
   };
 
-  const renderTemplates = (templatesList: Endpoint[]) => {
-    return templatesList?.map((template: Endpoint) => (
-      <button
-        onClick={() => handleTemplateClick(template)}
-        key={template.id}
-        className="flex flex-col relative w-full sm:w-40 h-40"
+  const renderServices = (servicesList: Endpoint[]) => {
+    return servicesList?.map((service: Endpoint) => (
+      <Link
+        to={`${service.id}`}
+        key={service.id}
+        className="flex flex-col items-center relative sm:size-40 hover:cursor-pointer"
       >
-        <FileItem label={template.name} isService />
-      </button>
+        <FileItem label={service.name} isService />
+      </Link>
     ));
   };
 
@@ -66,11 +67,26 @@ function Services() {
         <ServicesHeader />
         <div className="flex flex-1 flex-col gap-8 bg-gray-50 p-8 overflow-auto">
           <FilterComponent />
-          <div className="flex flex-col overflow-y-auto">
-            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] place-items-center">
-              {renderTemplates(templates)}
+          {isLoading && (
+            <div className="flex flex-col flex-1 justify-center items-center">
+              <CircularProgress />
             </div>
-          </div>
+          )}
+
+          {isError && (
+            <div className="flex flex-col pt-20 justify-center items-center text-red-600">
+              <p>Something went wrong! Failed to load forms.</p>
+              <p className="text-sm text-gray-500">
+                {error instanceof Error ? error.message : "Unknown error"}
+              </p>
+            </div>
+          )}
+
+          {!isLoading && !isError && services && (
+            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] place-items-center">
+              {renderServices(services)}
+            </div>
+          )}
         </div>
       </div>
 

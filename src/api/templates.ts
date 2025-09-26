@@ -7,7 +7,7 @@ export const fetchTemplates = async (): Promise<
 > => {
   try {
     const response = await axios.get(
-      "http://192.168.16.32:8080/api/v1/templates",
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/templates",
     );
 
     return response.data;
@@ -26,7 +26,7 @@ export const fetchTemplate = async (
 ): Promise<fetchTemplateApiResponse | undefined> => {
   try {
     const response = await axios.get(
-      "http://192.168.16.32:8080/api/v1/templates/" + id,
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/templates/" + id,
     );
 
     return response.data;
@@ -43,7 +43,7 @@ export const fetchTemplate = async (
 export const extractTemplatePlaceholder = async (id: string) => {
   try {
     const response = await axios.get(
-      "http://192.168.16.32:8080/api/v1/templates/validate/" + id,
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/templates/validate/" + id,
     );
 
     return response.data;
@@ -79,7 +79,7 @@ export const updateTemplate = async (
 ): Promise<createTemplateApiResponse | undefined> => {
   try {
     const response = await axios.put(
-      `http://192.168.16.32:8080/api/v1/templates`,
+      `https://dev-alphabank9.i-docs.local/backend/api/v1/templates`,
       data,
     );
 

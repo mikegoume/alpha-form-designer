@@ -14,9 +14,16 @@ function Forms() {
     user: { isAdmin },
   } = useAuth();
 
-  const { data: formsData, isLoading } = useQuery({
+  const {
+    data: formsData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["forms"],
     queryFn: fetchForms,
+    retry: 5, // retry up to 5 times
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000), // exponential backoff (max 30s)
   });
 
   const forms = formsData?.data;
@@ -32,7 +39,7 @@ function Forms() {
           to={linkTo}
           key={form.id}
           state={{ formId: form.id }} // 👈 pass data here
-          className="flex flex-col relative w-full sm:w-40 h-40"
+          className="flex flex-col relative w-full sm:size-40"
         >
           <FileItem label={form.name} isForm={true} />
         </Link>
@@ -45,12 +52,23 @@ function Forms() {
       <FormsHeader />
       <div className="flex flex-1 flex-col gap-8 p-8 overflow-auto">
         <FilterComponent />
-        {isLoading || !forms ? (
+        {isLoading && (
           <div className="flex flex-col flex-1 justify-center items-center">
             <CircularProgress />
           </div>
-        ) : (
-          <div className="flex flex-col overflow-y-auto">
+        )}
+
+        {isError && (
+          <div className="flex flex-col pt-20 justify-center items-center text-red-600">
+            <p>Something went wrong! Failed to load forms.</p>
+            <p className="text-sm text-gray-500">
+              {error instanceof Error ? error.message : "Unknown error"}
+            </p>
+          </div>
+        )}
+
+        {!isLoading && !isError && forms && (
+          <div className="flex flex-col ">
             <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))] place-items-center">
               {renderForms(forms)}
             </div>

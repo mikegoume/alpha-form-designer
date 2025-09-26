@@ -6,6 +6,7 @@ const ServicesRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<Services />} />
+      <Route path="/:serviceId" element={<Services />} />
     </Routes>
   );
 };

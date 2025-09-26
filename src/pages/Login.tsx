@@ -11,13 +11,13 @@ import {
 } from "@mui/material";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import * as z from "zod/v4";
+import * as z from "zod";
 
 import LoginImage from "../../assets/login2.png";
 import { useAuth } from "../contexts/AuthContext";
 
 const schema = z.object({
-  email: z.email("Invalid email"),
+  email: z.string().email("Invalid email"),
   password: z.string().min(1, "Required"),
 });
 

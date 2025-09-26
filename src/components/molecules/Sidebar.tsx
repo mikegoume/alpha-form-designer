@@ -32,7 +32,7 @@ function Sidebar() {
             className="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors bg-white/20 text-white"
           >
             <FileInput className="h-5 w-5" />
-            Forms
+            Dynamic Forms
           </NavLink>
         ) : (
           <>
@@ -47,7 +47,7 @@ function Sidebar() {
               }
             >
               <LayoutIcon className="h-5 w-5" />
-              Templates
+              Document Templates
             </NavLink>
             <NavLink
               to="/forms"
@@ -60,7 +60,7 @@ function Sidebar() {
               }
             >
               <FileInput className="h-5 w-5" />
-              Forms Management
+              Dynamic Forms
             </NavLink>
             <NavLink
               to="/services"
@@ -73,7 +73,7 @@ function Sidebar() {
               }
             >
               <Settings className="h-5 w-5" />
-              Services
+              External Services
             </NavLink>
           </>
         )}

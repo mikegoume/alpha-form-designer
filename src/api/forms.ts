@@ -6,7 +6,9 @@ export const fetchForms = async (): Promise<
   fetchFormsApiResponse | undefined
 > => {
   try {
-    const response = await axios.get("http://192.168.16.32:8080/api/v1/forms");
+    const response = await axios.get(
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/forms",
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -24,7 +26,7 @@ export const fetchForm = async (
 ): Promise<createFormApiResponse | undefined> => {
   try {
     const response = await axios.get(
-      "http://192.168.16.32:8080/api/v1/forms/" + id,
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/forms/" + id,
     );
 
     return response.data;
@@ -43,7 +45,7 @@ export const createForm = async (
 ): Promise<createFormApiResponse | undefined> => {
   try {
     const response = await axios.post(
-      "http://192.168.16.32:8080/api/v1/forms",
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/forms",
       data,
     );
 
@@ -63,7 +65,7 @@ export const updateForm = async (
 ): Promise<createFormApiResponse | undefined> => {
   try {
     const response = await axios.put(
-      "http://192.168.16.32:8080/api/v1/forms",
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/forms",
       data,
     );
 

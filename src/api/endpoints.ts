@@ -7,7 +7,7 @@ export const fetchEndpoints = async (): Promise<
 > => {
   try {
     const response = await axios.get(
-      "http://192.168.16.32:8080/api/v1/endpoints",
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/endpoints",
     );
 
     return response.data;
@@ -27,7 +27,8 @@ export const fetchObjectDataEndpoint = async (
 ) => {
   try {
     const response = await axios.post(
-      "http://192.168.16.32:8080/api/v1/fetchObjectData/" + endpointId,
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/fetchObjectData/" +
+        endpointId,
       data,
     );
 
@@ -45,7 +46,8 @@ export const fetchObjectDataEndpoint = async (
 export const fetchArrayDataEndpoint = async (endpointId: number, data: any) => {
   try {
     const response = await axios.post(
-      "http://192.168.16.32:8080/api/v1/fetchArrayData/" + endpointId,
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/fetchArrayData/" +
+        endpointId,
       data,
     );
 
@@ -63,7 +65,7 @@ export const fetchArrayDataEndpoint = async (endpointId: number, data: any) => {
 export const generateDocument = async (data: DocumentTemplate) => {
   try {
     const response = await axios.post(
-      "http://192.168.16.32:8080/api/v1/docgen",
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/docgen",
       data,
       {
         responseType: "blob",
