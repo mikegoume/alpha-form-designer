@@ -27,9 +27,10 @@ function FormBuilderHeader({
       <div className=" px-8 mb-8 flex items-start justify-between gap-12">
         <div className="gap-4 flex flex-col w-1/2">
           <h1 className="text-2xl font-bold text-neutral-800 inline">
-            Dynamic Forms Designer
+            Dynamic Form Designer
           </h1>
           <TextField
+            label="Form Name"
             value={formConfig.name}
             fullWidth
             id="input-with-icon-textfield"

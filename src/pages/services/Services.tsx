@@ -134,21 +134,26 @@ function Services() {
               <div className="flex-1 p-6 overflow-y-auto">
                 {selectedTemplate && (
                   <div className="space-y-4">
-                    {Object.entries(selectedTemplate).map(([key, value]) => (
-                      <div key={key}>
-                        <div className="flex justify-between items-start text-sm text-gray-700 gap-4">
-                          <span className="font-medium capitalize w-1/2">
-                            {key}
-                          </span>
-                          <span className="text-gray-600 w-1/2 break-words text-right">
-                            {typeof value === "object"
-                              ? JSON.stringify(value)
-                              : value?.toString()}
-                          </span>
-                        </div>
-                        <Divider className="mt-2" />
-                      </div>
-                    ))}
+                    {Object.entries(selectedTemplate).map(
+                      ([key, value]) =>
+                        (key === "name" ||
+                          key === "description" ||
+                          key === "url") && (
+                          <div key={key}>
+                            <div className="flex justify-between items-start text-sm text-gray-700 gap-4">
+                              <span className="font-medium capitalize w-1/2">
+                                {key}
+                              </span>
+                              <span className="text-gray-600 w-1/2 break-words text-right">
+                                {typeof value === "object"
+                                  ? JSON.stringify(value)
+                                  : value?.toString()}
+                              </span>
+                            </div>
+                            <Divider className="mt-2" />
+                          </div>
+                        ),
+                    )}
                   </div>
                 )}
               </div>

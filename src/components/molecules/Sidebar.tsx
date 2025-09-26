@@ -18,9 +18,10 @@ function Sidebar() {
       {/* <aside className="w-80 bg-gradient-to-b from-[#0a294f] to-[#11366b] border-r border-neutral-200"> */}
       <div className="p-6">
         <div className="flex items-center gap-2">
-          <FileText className="text-white size-6" />
+          <FileText className="text-white size-12" />
           <Link to={"/login"}>
-            <h1 className="text-xl font-semibold text-white">Forms Designer</h1>
+            <h1 className="text-xl font-semibold text-white">DocGen</h1>
+            <h2 className="text-xl font-semibold text-white">Forms Designer</h2>
           </Link>
         </div>
       </div>

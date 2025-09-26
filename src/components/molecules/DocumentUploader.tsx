@@ -82,14 +82,14 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
           </div>
           <div>
             <p className="text-lg font-medium text-neutral-800">
-              Upload your DOCX document
+              Upload your Word template
             </p>
             <p className="text-neutral-500 mt-1">
               Drag and drop your file here, or click to select
             </p>
           </div>
           <Button variant="contained" color="primary">
-            Select File
+            Select Template
           </Button>
         </div>
       </div>

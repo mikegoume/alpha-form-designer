@@ -76,7 +76,7 @@ function Login() {
           <div className="flex flex-col items-center justify-center gap-4">
             <h1 className="text-4xl font-bold text-neutral-800">Login</h1>
             <h1 className="text-xl text-neutral-800">
-              Welcome to Dynamic Form Builder
+              Welcome to DocGen Forms Designer
             </h1>
           </div>
           <div className="flex flex-col gap-8 w-full">

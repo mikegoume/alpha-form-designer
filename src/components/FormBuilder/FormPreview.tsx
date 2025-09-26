@@ -154,7 +154,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         {formConfig.formVariables.length === 0 ? (
           <div className="p-8 border-2 border-dashed border-gray-200 rounded-lg text-center">
             <p className="text-gray-500">
-              Add form formVariables from the left panel{" "}
+              Please, select template to fill the panel.
             </p>
           </div>
         ) : (

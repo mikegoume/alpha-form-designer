@@ -45,7 +45,7 @@ function MetadataManager({
       className="bg-white rounded-lg shadow-apple p-4"
     >
       <h2 className="text-lg font-medium text-neutral-800 mb-4">
-        Document Metadata
+        Template Metadata
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} className="gap-2 flex flex-col">
         <Controller

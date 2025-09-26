@@ -43,7 +43,8 @@ export const fetchTemplate = async (
 export const extractTemplatePlaceholder = async (id: string) => {
   try {
     const response = await axios.get(
-      "https://dev-alphabank9.i-docs.local/backend/api/v1/templates/validate/" + id,
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/templates/validate/" +
+        id,
     );
 
     return response.data;

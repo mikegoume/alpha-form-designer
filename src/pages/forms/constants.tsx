@@ -23,7 +23,7 @@ export const inputTypes: FieldTypeOption[] = [
 export const buttonTypes: ButtonTypeOption[] = [
   {
     actionType: "api_call",
-    label: "API Call",
+    label: "External Service",
     icon: <MousePointer size={18} />,
   },
   { actionType: "submit", label: "Submit", icon: <Check size={18} /> },

@@ -20,7 +20,7 @@ function FormsHeader() {
       <div className="flex flex-row items-center justify-between px-8">
         <div className=" flex flex-col justify-between">
           <p className="text-2xl font-semibold tracking-tight leading-8">
-            Forms
+            Dynamic Forms
           </p>
           <Typography
             className="font-medium tracking-tight"

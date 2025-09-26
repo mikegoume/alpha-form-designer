@@ -19,7 +19,7 @@ const PlaceholderManager: React.FC<PlaceholderManagerProps> = ({
       className="bg-white rounded-lg shadow-apple p-4"
     >
       <h2 className="text-lg font-medium text-neutral-800 mb-4">
-        Document Placeholders
+        Template Placeholders
       </h2>
 
       {placeholders.length === 0 ? (

@@ -17,23 +17,45 @@ const ElementsPanel: React.FC<ElementsPanelProps> = ({ onAddElement }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex-1">
       <div className="p-4 border-b border-gray-200 bg-gray-50">
-        <h2 className="font-medium text-gray-700">Form Elements</h2>
+        <h2 className="font-medium text-gray-700">Form Actions</h2>
       </div>
 
       {/* Button Elements Section */}
       <div className="p-4">
-        <h3 className="text-sm font-medium text-gray-500 mb-3">Buttons</h3>
+        <h3 className="text-md font-medium text-gray-500 mb-3">
+          Select Actions
+        </h3>
+        <h2 className="text-sm font-medium text-gray-500 mb-3">Form Actions</h2>
+        <div className="flex flex-row gap-4 mb-3">
+          {buttonTypes.map(
+            (button, index) =>
+              index === 0 && (
+                <button
+                  key={button.actionType}
+                  onClick={() => handleAddButton(button.actionType)}
+                  className="flex items-center p-2 border border-gray-200 rounded bg-white hover:bg-gray-50 transition-colors text-left"
+                >
+                  <span className="mr-2 text-gray-500">{button.icon}</span>
+                  <span className="text-sm">{button.label}</span>
+                </button>
+              ),
+          )}
+        </div>
+        <h2 className="text-sm font-medium text-gray-500 mb-3">Form Buttons</h2>
         <div className="flex flex-row gap-4">
-          {buttonTypes.map((button) => (
-            <button
-              key={button.actionType}
-              onClick={() => handleAddButton(button.actionType)}
-              className="flex items-center p-2 border border-gray-200 rounded bg-white hover:bg-gray-50 transition-colors text-left"
-            >
-              <span className="mr-2 text-gray-500">{button.icon}</span>
-              <span className="text-sm">{button.label}</span>
-            </button>
-          ))}
+          {buttonTypes.map(
+            (button, index) =>
+              index > 0 && (
+                <button
+                  key={button.actionType}
+                  onClick={() => handleAddButton(button.actionType)}
+                  className="flex items-center p-2 border border-gray-200 rounded bg-white hover:bg-gray-50 transition-colors text-left"
+                >
+                  <span className="mr-2 text-gray-500">{button.icon}</span>
+                  <span className="text-sm">{button.label}</span>
+                </button>
+              ),
+          )}
         </div>
       </div>
     </div>
