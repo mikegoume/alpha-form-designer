@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 import {
   FileInput,
   FileText,
@@ -19,7 +19,9 @@ function Sidebar() {
       <div className="p-6">
         <div className="flex items-center gap-2">
           <FileText className="text-white size-6" />
-          <h1 className="text-xl font-semibold text-white">Forms Designer</h1>
+          <Link to={"/login"}>
+            <h1 className="text-xl font-semibold text-white">Forms Designer</h1>
+          </Link>
         </div>
       </div>
 

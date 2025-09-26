@@ -6,7 +6,9 @@ export const fetchTemplates = async (): Promise<
   fetchTemplatesApiResponse | undefined
 > => {
   try {
-    const response = await axios.get("/api2/api/v1/templates");
+    const response = await axios.get(
+      "http://192.168.16.32:8080/api/v1/templates",
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -23,7 +25,9 @@ export const fetchTemplate = async (
   id: string,
 ): Promise<fetchTemplateApiResponse | undefined> => {
   try {
-    const response = await axios.get("/api2/api/v1/templates/" + id);
+    const response = await axios.get(
+      "http://192.168.16.32:8080/api/v1/templates/" + id,
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -38,7 +42,9 @@ export const fetchTemplate = async (
 
 export const extractTemplatePlaceholder = async (id: string) => {
   try {
-    const response = await axios.get("/api2/api/v1/templates/validate/" + id);
+    const response = await axios.get(
+      "http://192.168.16.32:8080/api/v1/templates/validate/" + id,
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -72,7 +78,10 @@ export const updateTemplate = async (
   data: updateTemplateApiArgs,
 ): Promise<createTemplateApiResponse | undefined> => {
   try {
-    const response = await axios.put(`/api2/api/v1/templates`, data);
+    const response = await axios.put(
+      `http://192.168.16.32:8080/api/v1/templates`,
+      data,
+    );
 
     return response.data;
   } catch (error: unknown) {

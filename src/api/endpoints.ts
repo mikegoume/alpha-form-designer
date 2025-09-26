@@ -6,7 +6,9 @@ export const fetchEndpoints = async (): Promise<
   fetchTemplatesApiResponse | undefined
 > => {
   try {
-    const response = await axios.get("/api2/api/v1/endpoints");
+    const response = await axios.get(
+      "http://192.168.16.32:8080/api/v1/endpoints",
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -25,7 +27,7 @@ export const fetchObjectDataEndpoint = async (
 ) => {
   try {
     const response = await axios.post(
-      "/api2/api/v1/fetchObjectData/" + endpointId,
+      "http://192.168.16.32:8080/api/v1/fetchObjectData/" + endpointId,
       data,
     );
 
@@ -43,7 +45,7 @@ export const fetchObjectDataEndpoint = async (
 export const fetchArrayDataEndpoint = async (endpointId: number, data: any) => {
   try {
     const response = await axios.post(
-      "/api2/api/v1/fetchArrayData/" + endpointId,
+      "http://192.168.16.32:8080/api/v1/fetchArrayData/" + endpointId,
       data,
     );
 
@@ -60,15 +62,19 @@ export const fetchArrayDataEndpoint = async (endpointId: number, data: any) => {
 
 export const generateDocument = async (data: DocumentTemplate) => {
   try {
-    const response = await axios.post("/api2/api/v1/docgen", data, {
-      responseType: "blob",
-      headers: {
-        Accept:
-          data.fileProperties.fileFormat === "PDF"
-            ? "application/pdf"
-            : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    const response = await axios.post(
+      "http://192.168.16.32:8080/api/v1/docgen",
+      data,
+      {
+        responseType: "blob",
+        headers: {
+          Accept:
+            data.fileProperties.fileFormat === "PDF"
+              ? "application/pdf"
+              : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        },
       },
-    });
+    );
 
     return response.data;
   } catch (error: unknown) {

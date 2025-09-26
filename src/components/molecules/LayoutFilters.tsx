@@ -47,7 +47,7 @@ export default function FilterComponent() {
   };
 
   return (
-    <div className="flex flex-row gap-4 w-1/3 items-center justify-end ml-auto">
+    <div className="flex flex-row gap-4 w-2/3 items-center justify-end ml-auto sm:w-2/3">
       {/* Search Input */}
       <TextField
         fullWidth
@@ -58,7 +58,7 @@ export default function FilterComponent() {
         InputProps={{
           startAdornment: <Search className="mr-2" />,
         }}
-        className=""
+        className="max-w-[400px]"
       />
 
       {/* Title Tags Dropdown */}

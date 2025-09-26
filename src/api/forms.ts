@@ -6,7 +6,7 @@ export const fetchForms = async (): Promise<
   fetchFormsApiResponse | undefined
 > => {
   try {
-    const response = await axios.get("/api2/api/v1/forms");
+    const response = await axios.get("http://192.168.16.32:8080/api/v1/forms");
 
     return response.data;
   } catch (error: unknown) {
@@ -23,7 +23,9 @@ export const fetchForm = async (
   id: number,
 ): Promise<createFormApiResponse | undefined> => {
   try {
-    const response = await axios.get("/api2/api/v1/forms/" + id);
+    const response = await axios.get(
+      "http://192.168.16.32:8080/api/v1/forms/" + id,
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -40,7 +42,10 @@ export const createForm = async (
   data: createFormApiArgs,
 ): Promise<createFormApiResponse | undefined> => {
   try {
-    const response = await axios.post("/api2/api/v1/forms", data);
+    const response = await axios.post(
+      "http://192.168.16.32:8080/api/v1/forms",
+      data,
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -57,7 +62,10 @@ export const updateForm = async (
   data: updateFormApiArgs,
 ): Promise<createFormApiResponse | undefined> => {
   try {
-    const response = await axios.put("/api2/api/v1/forms", data);
+    const response = await axios.put(
+      "http://192.168.16.32:8080/api/v1/forms",
+      data,
+    );
 
     return response.data;
   } catch (error: unknown) {
