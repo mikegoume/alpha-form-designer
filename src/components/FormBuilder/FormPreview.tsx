@@ -185,7 +185,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   }
 
   return (
-    <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+    <div className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200 overflow-y-auto">
       <h2 className="text-xl font-semibold mb-6">{formConfig?.name}</h2>
 
       {formConfig.formVariables

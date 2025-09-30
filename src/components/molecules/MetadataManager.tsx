@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, TextField } from "@mui/material";
 import { motion } from "framer-motion";
+import { MuiChipsInput } from "mui-chips-input";
 
 export type MetadataForm = {
   fileName: string;
@@ -60,6 +61,7 @@ function MetadataManager({
               fullWidth
               error={errors.fileName ? true : false}
               helperText={errors.fileName?.message}
+              required
             />
           )}
         />
@@ -76,6 +78,7 @@ function MetadataManager({
               multiline
               error={errors.description ? true : false}
               helperText={errors.description?.message}
+              required
             />
           )}
         />
@@ -83,16 +86,7 @@ function MetadataManager({
           name="tags"
           control={control}
           disabled={!showUpdateMetadataButton}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Tags"
-              variant="outlined"
-              fullWidth
-              error={errors.tags ? true : false}
-              helperText={errors.tags?.message}
-            />
-          )}
+          render={({ field }) => <MuiChipsInput {...field} />}
         />
         {showUpdateMetadataButton && (
           <Button

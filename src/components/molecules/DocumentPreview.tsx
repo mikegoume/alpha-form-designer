@@ -44,10 +44,10 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document }) => {
   }, [document.data]);
 
   return (
-    <div className="w-full h-full bg-black/60 flex flex-col items-center justify-center rounded-lg">
+    <div className="bg-black/60 rounded-lg shadow-xl p-4">
       <div
         ref={contentRef}
-        className="overflow-y-auto min-w-2xl bg-white shadow-xl rounded-lg"
+        className="w-2xl bg-white shadow-xl rounded-lg max-h-[1000px] overflow-y-auto "
       />
     </div>
   );

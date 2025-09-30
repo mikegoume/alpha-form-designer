@@ -105,6 +105,7 @@ function TemplateManagement() {
           <Button
             variant="contained"
             className="mt-4 bg-primary-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-600 transition-colors"
+            disabled={template?.forms.length === 0}
             onClick={() => navigate("fill")}
           >
             <FormInput className="h-4 w-4" />
@@ -130,18 +131,18 @@ function TemplateManagement() {
           title={isEditing ? "Edit Template" : "Template Preview"}
           actionButtons={renderActionButtons()}
         />
-        <main className="flex flex-col flex-1 py-8 px-4 h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-            <div className="space-y-6 col-span-2">
+        <main className="flex-1 py-8 px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="col-span-2">
               <DocumentPreview document={template} />
             </div>
             <div className="space-y-6">
-              <PlaceholderManager placeholders={template.placeholders} />
               <MetadataManager
                 metadata={documentMetadata}
                 showUpdateMetadataButton={isEditing}
                 onSubmit={onMetadataUpdate}
               />
+              <PlaceholderManager placeholders={template.placeholders} />
             </div>
           </div>
         </main>

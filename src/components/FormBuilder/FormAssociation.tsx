@@ -53,7 +53,7 @@ function FormAssociation({
           >
             {templates.map((template) => (
               <MenuItem key={template.id} value={template.id}>
-                {template.filename}
+                {template.name}
               </MenuItem>
             ))}
           </Select>

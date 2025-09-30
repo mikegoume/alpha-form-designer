@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { IconButton } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, X } from "lucide-react";
 
 import {
   createForm,
@@ -28,6 +30,8 @@ const FormBuilder: React.FC = () => {
   const navigate = useNavigate();
 
   const { formId: id } = useParams();
+
+  const [showWarning, setShowWarning] = useState(true);
 
   const saveFormMutation = useMutation({
     mutationKey: [id],
@@ -185,7 +189,8 @@ const FormBuilder: React.FC = () => {
   };
 
   const handleResetConfig = () => {
-    setFormConfig(initialFormConfig);
+    // We keep the name cause it's changed independently from associated template
+    setFormConfig({ ...initialFormConfig, name: formConfig.name });
   };
 
   if (isFormsLoading) {
@@ -220,6 +225,23 @@ const FormBuilder: React.FC = () => {
               />
               <ElementsPanel onAddElement={handleAddElement} />
             </div>
+
+            {showWarning && (
+              <div className="w-full bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-row gap-4 items-center">
+                <AlertCircle size={30} color="gray" />
+                <p className="text-gray-500">
+                  Submit button is required in order to save the form!
+                </p>
+                <IconButton
+                  onClick={() => setShowWarning(false)}
+                  size="medium"
+                  className="hover:text-gray-500"
+                  style={{ marginLeft: "auto" }}
+                >
+                  <X className="size-5" />
+                </IconButton>
+              </div>
+            )}
 
             <div className="lg:col-span-4">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">

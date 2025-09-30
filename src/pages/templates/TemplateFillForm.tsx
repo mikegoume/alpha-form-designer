@@ -204,7 +204,7 @@ function TemplateFillForm() {
           showDownloadButton={!!generatedBlob && selectedFormat === "DOCX"}
           onDownloadClick={handleDownload}
         />
-        <div className="flex flex-col flex-1 items-center gap-6 p-4 bg-neutral-100">
+        <div className="flex flex-col flex-1 overflow-y-auto items-center gap-6 p-4 bg-neutral-100">
           {selectedTemplate.forms.length > 0 && isAdmin && (
             <FormControl
               sx={{ width: "100%", backgroundColor: "white", maxWidth: 500 }}
@@ -225,7 +225,7 @@ function TemplateFillForm() {
               </Select>
             </FormControl>
           )}
-          <div className="bg-white rounded-xl shadow-lg w-[1000px]">
+          <div className="bg-white rounded-xl shadow-lg w-[1000px] overflow-y-auto">
             {formConfig ? (
               <FormPreview
                 formConfig={formConfig}

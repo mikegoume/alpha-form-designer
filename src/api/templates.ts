@@ -62,7 +62,10 @@ export const createTemplate = async (
   data: createTemplateApiArgs,
 ): Promise<createTemplateApiResponse | undefined> => {
   try {
-    const response = await axios.post("api2/api/v1/templates", data);
+    const response = await axios.post(
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/templates",
+      data,
+    );
 
     return response.data;
   } catch (error: unknown) {

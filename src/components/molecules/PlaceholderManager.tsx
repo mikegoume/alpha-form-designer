@@ -30,7 +30,7 @@ const PlaceholderManager: React.FC<PlaceholderManagerProps> = ({
           </p>
         </div>
       ) : (
-        <ul className="space-y-2 max-h-[300px] overflow-y-auto">
+        <ul className="space-y-2 flex-1 overflow-y-auto">
           {placeholders.map((placeholder) => (
             <motion.li
               key={placeholder.id}
