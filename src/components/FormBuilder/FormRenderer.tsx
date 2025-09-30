@@ -3,6 +3,7 @@ import {
   Button,
   Checkbox,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -17,11 +18,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useMutation } from "@tanstack/react-query";
+import dayjs, { Dayjs } from "dayjs";
+import { Trash2 } from "lucide-react";
 
 import { fetchArrayDataEndpoint } from "../../api/endpoints";
 import { Column, FieldTypes, FormConfig, FormValues } from "../../types/form";
 import { mapRequestParamsToValues } from "../../utils/endpoints";
 import ImageUpload from "../atoms/ImageUpload";
+
 interface FormRendererProps {
   formConfig: FormConfig;
   formValues: FormValues;
@@ -64,7 +68,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
   }, [serviceIdToLoad, formValues]);
 
   const getDefaultRow = () => {
-    let row: any = {};
+    let row: any = { id: Date.now() };
 
     columns?.map((col: Column) => (row = { ...row, [col.name]: "" }));
 
@@ -84,7 +88,10 @@ const FormRenderer: React.FC<FormRendererProps> = ({
     setRows((prev) => [...prev, getDefaultRow()]);
   };
 
-  // console.log(label, value);
+  const deleteRow = (id) => {
+    setRows((prev) => prev.filter((row) => row.id !== id));
+    onChange && onChange(rows.filter((row) => row.id !== id));
+  };
 
   switch (type) {
     case FieldTypes.TEXT:
@@ -128,6 +135,7 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                 {columns?.map((col) => (
                   <TableCell key={col.name}>{col.value}</TableCell>
                 ))}
+                <TableCell align="center"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -155,14 +163,14 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                             }
                             fullWidth
                           />
-                        ) : col.type === "boolean" ? (
+                        ) : col.type === FieldTypes.BOOLEAN ? (
                           <Checkbox
                             checked={value as boolean}
                             onChange={(e) =>
                               handleChange(row.id, col.name, e.target.checked)
                             }
                           />
-                        ) : col.type === "date" ? (
+                        ) : col.type === FieldTypes.DATETIME ? (
                           <DatePicker
                             value={value ? dayjs(value as Dayjs) : null}
                             onChange={(newValue) =>
@@ -174,6 +182,16 @@ const FormRenderer: React.FC<FormRendererProps> = ({
                       </TableCell>
                     );
                   })}
+                  <TableCell align="center">
+                    <IconButton
+                      onClick={() => deleteRow(row.id)}
+                      color="error"
+                      size="small"
+                      aria-label="delete row"
+                    >
+                      <Trash2 size={18} />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

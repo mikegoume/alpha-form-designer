@@ -80,6 +80,25 @@ export const updateForm = async (
   }
 };
 
+export const deleteForm = async (
+  id: number,
+): Promise<createFormApiResponse | undefined> => {
+  try {
+    const response = await axios.delete(
+      "https://dev-alphabank9.i-docs.local/backend/api/v1/forms/" + id,
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      console.error("Axios error posting data:", error.message);
+      // You can also access error.response?.data, etc.
+    } else {
+      console.error("Unexpected error:", (error as Error).message);
+    }
+  }
+};
+
 type fetchFormsApiResponse = {
   message: string;
   errorCode: string;
