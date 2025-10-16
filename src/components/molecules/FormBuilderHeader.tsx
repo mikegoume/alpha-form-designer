@@ -17,7 +17,14 @@ import {
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, MoreVertical, Play, Save, Trash2 } from "lucide-react";
+import {
+  AlertTriangle,
+  MoreVertical,
+  Pause,
+  Play,
+  Save,
+  Trash2,
+} from "lucide-react";
 
 import { deleteForm } from "../../api/forms";
 import { ButtonElement, FormConfig } from "../../types/form";
@@ -133,19 +140,22 @@ function FormBuilderHeader({
                   "aria-labelledby": "template-actions-button",
                 }}
               >
-                <MenuItem onClick={togglePreviewMode}>
+                <MenuItem
+                  onClick={togglePreviewMode}
+                  disabled={formConfig.formVariables.length === 0}
+                >
                   <ListItemIcon>
-                    <Play size={18} />
+                    {previewMode ? <Pause size={18} /> : <Play size={18} />}
                   </ListItemIcon>
                   <ListItemText>
-                    {previewMode ? "Exit Preview" : "Preview"}
+                    {previewMode ? "Exit Preview" : "Preview Form"}
                   </ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleSaveConfig} disabled={isSaveDisabled}>
                   <ListItemIcon>
                     <Save size={18} />
                   </ListItemIcon>
-                  <ListItemText>Save</ListItemText>
+                  <ListItemText>Save Form</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleOpenDeleteDialog}>

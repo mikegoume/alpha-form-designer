@@ -193,7 +193,7 @@ function TemplateManagement() {
               <ListItemIcon>
                 <Edit size={18} />
               </ListItemIcon>
-              <ListItemText>Edit</ListItemText>
+              <ListItemText>Edit Template</ListItemText>
             </MenuItem>
             <MenuItem
               onClick={handleFill}
@@ -202,14 +202,16 @@ function TemplateManagement() {
               <ListItemIcon>
                 <FormInput size={18} />
               </ListItemIcon>
-              <ListItemText>Fill</ListItemText>
+              <ListItemText>Fill Template</ListItemText>
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleOpenDeleteDialog}>
               <ListItemIcon>
                 <Trash2 size={18} color="#dc2626" />
               </ListItemIcon>
-              <ListItemText sx={{ color: "#dc2626" }}>Delete</ListItemText>
+              <ListItemText sx={{ color: "#dc2626" }}>
+                Delete Template
+              </ListItemText>
             </MenuItem>
           </Menu>
         </>
